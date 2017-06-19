@@ -1,0 +1,53 @@
+body{
+  white-space: nowrap;
+}
+
+#blue-background {
+  background-color: #0079bf;
+}
+.board {
+  background-color: #0079bf;
+}
+
+.list-cards{
+  width: 16rem;
+  height: 100%;
+  display: inline-grid;
+  background-color: #cacaca;
+}
+
+.card {
+  height: 4rem;
+  background-color: #ffffff;
+  border-radius: .5rem;
+  padding-left: 11px;
+  padding-top: 1px;
+  margin: 15px 7px;
+}
+
+.card p {
+  margin-top: 9px;
+}
+
+.add-card {
+  height: 1rem;
+  background-color: #cacaca;
+  margin-top: 0px;
+  margin-left: 0px;
+}
+
+.card input {
+  width: 100%;
+  font-size: 15px;
+  border: none;
+  background-color: #cacaca;
+}
+
+.card-fullview {
+  background-color: #ffffff;
+  height: 36rem;
+  width: 45rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
