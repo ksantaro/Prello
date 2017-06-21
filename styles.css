@@ -1,53 +1,369 @@
 body{
   white-space: nowrap;
+  margin-top: 2.6rem;
+  margin-left: 0;
+}
+
+button {
+  outline: none;
 }
 
 #blue-background {
   background-color: #0079bf;
 }
+
+#h1-white {
+  color: white;
+  margin-left: .55rem;
+  margin-bottom: .75rem;
+  margin-top: 0.125rem;
+  width: 50%;
+  margin-right: 0;
+  display: inline-block;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  font-size: 1.2rem;
+}
+
+.dropdown-content p {
+
+    display: block !important;
+    width: auto !important;
+    margin-right: 0 !important;
+    padding: .75rem .5rem !important;
+    height: auto !important;
+    line-height: initial !important;
+    background-color: #ffffff !important;
+    color: #0c0c0c !important;
+    text-shadow: 0 0 !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-size: 1.2rem !important;
+    border-bottom: solid #b7b7b7 .09rem;
+    min-width: 15.5rem !important;
+}
+
+.dropdown-content p:hover{
+  background-color: #dadada !important;
+}
+
+.dropdown a {
+  text-decoration: none;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.options {
+  display: inline-block;
+  text-align: right;
+  width: 50%;
+}
+
+.options p {
+  margin-right: 1rem;
+  float: right;
+  transform: translateY(84%);
+  margin-top: 3px;
+}
+
+.options-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  font-size: 1.2rem;
+}
+
+.options-hover {
+  position: relative;
+  display: inline-block;
+}
+
+.options-hover:hover .options-content {
+  display: block;
+}
+
+#main-navbar {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  height: 2.6rem;
+  background-color: #0067a2;
+  vertical-align: middle;
+  line-height: 2.6rem;
+  padding-left: .365rem;
+}
+
+#main-navbar p{
+  display: inline-block;
+  margin: 0;
+}
+
+#main-navbar div:first-child p {
+  background-color: #2396bf;
+  padding: 0;
+  color: white;
+  font-weight: 600;
+  height: 2rem;
+  vertical-align: middle;
+  line-height: 2rem;
+  width: 4rem;
+  margin: 0;
+  text-align: center;
+}
+
+#main-navbar div:nth-child(2) p{
+  padding-right: 2.2rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #c9f4fb;
+  line-height: 1rem;
+  vertical-align: middle;
+  text-shadow: 0.06rem 0.06rem #0c1213;
+  font-style: oblique;
+}
+
+#main-navbar div:nth-child(3) p{
+  background-color: #2396bf;
+  padding: 0;
+  color: white;
+  font-weight: 600;
+  height: 2rem;
+  vertical-align: middle;
+  line-height: 2rem;
+  width: 5rem;
+  margin: 0;
+  text-align: center;
+  margin-right: 1.25rem;
+}
+
+#main-navbar div#third-width:nth-child(3)  {
+  text-align: right;
+}
+
+#main-navbar div#third-width34:nth-child(2) {
+  text-align: center;
+}
+
+#third-width {
+  width: 33%;
+  display: inline-block;
+}
+
+#third-width34 {
+  width: 34%;
+  display: inline-block;
+}
 .board {
   background-color: #0079bf;
+  margin-left: .55rem;
 }
 
 .list-cards{
   width: 16rem;
   height: 100%;
   display: inline-grid;
-  background-color: #cacaca;
+  background-color: #dcdcdc;
+  margin-right: .3125rem;
 }
 
 .card {
   height: 4rem;
   background-color: #ffffff;
   border-radius: .5rem;
-  padding-left: 11px;
-  padding-top: 1px;
-  margin: 15px 7px;
+  padding-left: .6875rem;
+  padding-top: .0625rem;
+  margin: .9375rem .4375rem;
+  color: white;
 }
 
 .card p {
-  margin-top: 9px;
+  margin-top: .5625rem;
 }
 
+.card:hover {
+  color: gray;
+}
+
+.card p:first-child {
+  color: black;
+}
+
+.card p:nth-child(2) {
+  text-align: right;
+  margin-right: .625rem;
+}
 .add-card {
   height: 1rem;
-  background-color: #cacaca;
-  margin-top: 0px;
-  margin-left: 0px;
+  background-color: #dcdcdc;
+  margin-top: 0;
+  margin-left: 0;
 }
 
 .card input {
   width: 100%;
-  font-size: 15px;
+  font-size: .9375rem;
   border: none;
-  background-color: #cacaca;
+  background-color: #dcdcdc;
+}
+
+.card input:focus {
+  outline-color: #dcdcdc;
 }
 
 .card-fullview {
   background-color: #ffffff;
-  height: 36rem;
+  min-height: 36rem;
   width: 45rem;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 10px;
+  margin-top: .625rem;
+  padding-left: .625rem;
+  padding-top: .625rem;
+}
+
+.card-fullview h2 {
+  margin-top: 0;
+}
+
+.add-list {
+  border-radius: .6875rem;
+}
+
+.add-list button {
+  border-radius: .6875rem;
+  padding-left: .5rem;
+  background-color: #04639a;
+  border: none;
+  color: white;
+  height: 2.675rem;
+}
+
+.add-list button:hover {
+  background-color: #00456d;
+}
+
+.member {
+  display: inline-block;
+  margin-right: .4375rem;
+  background-color: #dcdcdc;
+  padding: .75rem;
+}
+
+.members button {
+  border: none;
+  padding: .875rem;
+  padding-bottom: .8125rem;
+  width: 3.875rem;
+}
+
+.member:hover {
+  background-color: #a2a2a2;
+}
+
+.members button:hover {
+  background-color: #a2a2a2;
+}
+
+.description {
+
+}
+
+.labels p {
+  display: inline-block;
+  margin-right: .4375rem;
+  padding: .75rem;
+}
+
+.labels button {
+  display: inline-block;
+  margin-right: .4375rem;
+  padding: .75rem;
+  border: none;
+  padding: .875rem;
+  padding-bottom: .8125rem;
+  width: 3.875rem;
+}
+
+.labels button:hover {
+  background-color: gray;
+}
+
+.labels *:nth-child(4n+1) {
+  background-color: rgba(20, 191, 39, .77);
+}
+
+.labels *:nth-child(4n+1):hover {
+  background-color: rgba(20, 191, 39, 1);
+}
+
+.labels *:nth-child(4n+2) {
+  background-color: rgba(20, 98, 191, .77);
+}
+
+.labels *:nth-child(4n+2):hover {
+  background-color: rgba(20, 98, 191, 1);
+}
+
+.labels *:nth-child(4n+3) {
+  background-color: rgba(191, 50, 20, .77);
+}
+
+.labels *:nth-child(4n+3):hover {
+  background-color: rgba(191, 50, 20, 1);
+}
+
+.labels *:nth-child(4n+4) {
+  background-color: rgba(191, 20, 188, 0.77);
+}
+
+.labels *:nth-child(4n+4):hover {
+  background-color: rgba(191, 20, 188, 1);
+}
+
+.labels h3:first-child {
+  background-color: white;
+}
+
+.labels h3:first-child:hover {
+  background-color: white;
+}
+
+.comments textarea {
+  box-shadow: 0.03125rem .04375rem #9a9999;
+  border-color: #dedede;
+  width: 25rem;
+  height: 7.1875rem;
+}
+
+.comments textarea:focus {
+  outline-color: #dedede;
+}
+
+.comments button {
+  border: none;
+  width: 5rem;
+  height: 2.5rem;
+  margin-top: .5rem;
+  margin-left: 20.45rem;
+}
+
+.comments button:hover {
+  background-color: gray;
 }
