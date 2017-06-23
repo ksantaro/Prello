@@ -3,25 +3,37 @@
 
 <head>
   <link rel="stylesheet" href="styles.css"/>
+  <script type="text/javascript" src="./login.js" async></script>
   <title>Login</title>
 </head>
 
-<body>
-  <header>
-    <h1>Prello</h1>
-  </header>
+<body id="login-page">
+  <nav id="main-navbar">
+    <div id="third-width">
+    </div>
+    <div id="third-width34">
+      <p>Prello</p>
+    </div>
+    <div id="third-width">
+    </div>
+  </nav>
   <h2>Sign Up</h2>
-  <form>
-    <p>Username <input type="text"></input></p>
-    <p>Password <input type="password"></input></p>
-    <p>Confirm Password <input type="password"></input></p>
-    <p>Remember Me? <input type="checkbox"></input> <a href="./boards.html"><button type="button">Register</button></p></a>
+  <form id="sign-up-form">
+  <div class="form-center">
+    <p>Username<br><input id="username" type="text" class="input-text" placeholder="e.g., John Doe" required></input></p>
+    <p>Email<br><input id="email" class="input-text" type="email" placeholder="e.g., jdoe.gmail.com" required></p>
+    <p>Password<br><input id="password" class="input-text" type="password" placeholder="" required></input></p>
+    <p>Confirm Password<br><input id="confirm-password" class="input-text" type="password" placeholder="" required></input></p>
+    <p><input type="checkbox"></input>Remember Me? <input type="submit" value="Sign Up"></p>
+  </div>
   </form>
   <h2>Login</h2>
-  <form>
-    <p>Username <input type="text"></input></p>
-    <p>Password <input type="password"></input></p>
-    <p>Remember Me? <input type="checkbox"></input> <a href="./boards.html"><button type="button">Log in</button></p></a>
+  <form id="login-form">
+  <div class="form-center">
+    <p>Username<br><input id="username" class="input-text" type="text" placeholder="e.g., John Doe" required></input></p>
+    <p>Password<br><input id="confirm-password" class="input-text" type="password" placeholder="" required></input></p>
+    <p><input type="checkbox"></input>Remember Me?<input type="submit" value="Log in"></p>
+  </div>
   </form>
 </body>
 

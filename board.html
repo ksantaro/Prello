@@ -3,6 +3,8 @@
 
 <head>
   <link rel="stylesheet" href="styles.css"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="./board.js" async></script>
   <title>Board</title>
 </head>
 
@@ -10,13 +12,13 @@
   <nav id="main-navbar">
     <div id="third-width">
       <div class="dropdown">
-        <p>Boards</p>
+        <p id="boards-btn">Boards</p>
         <div class="dropdown-content">
-          <a href="#"><p>Individual Board Name 1</p></a>
-          <a href="#"><p>Individual Board Name 2</p></a>
-          <a href="#"><p>Individual Board Name 3</p></a>
-          <a href="#"><p>Individual Board Name 4</p></a>
-          <a href="#"><p>Add Board +</p></a>
+          <a href="#">Individual Board Name 1</a>
+          <a href="#">Individual Board Name 2</a>
+          <a href="#">Individual Board Name 3</a>
+          <a href="#">Individual Board Name 4</a>
+          <a href="#">Add Board +</a>
 
         </div>
       </div>
@@ -28,117 +30,91 @@
       <a href="./login.html"><p>Sign Out</p></a>
     </div>
   </nav>
+  <h1 id="h1-white">Board Title</h1>
   <header>
-    <h1 id="h1-white">Board Title</h1>
     <div class="options">
-      <div class="options-hover">
-        <p>Show Menu</p>
+      <div class="options-dropdown">
+        <p id="menu-btn">Show Menu</p>
         <div class="options-content">
-          <a href="#"><p>Option 1</p></a>
-          <a href="#"><p>Option 2</p></a>
-          <a href="#"><p>Option 3</p></a>
-          <a href="#"><p>Option 4</p></a>
-          <a href="#"><p>Add Board +</p></a>
+          <div class="menu-title">
+            <h4>Menu</h4>
+            <span id="menu-btn-exit">X</span>
+          </div>
+          <a href="#">Option 1</a>
+          <a href="#">Option 2</a>
+          <a href="#">Option 3</a>
+          <a href="#">Option 4</a>
+          <a href="#">More Options</a>
         </div>
       </div>
     </div>
   </header>
-  <div class="board">
-    <div class="list-cards">
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
+  <div id="board" class="board">
+    <div id="list-list" class="list-list">
+      <div id="list-cards" class="list-cards">
+
+        <h3 id="card-object" contenteditable="true">Title of list of cards</h3>
+        <div id="cards">
+          <div id="card-object" class="card">
+            <p>Name of Card</p>
+            <p>edit</p>
+          </div>
+          <div id="card-object" class="card">
+            <p>Name of Card</p>
+            <p>edit</p>
+          </div>
+        </div>
+        <div id="card-object" class="card add-card">
+          <button type="button">Add a new card +</button>
+        </div>
       </div>
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card add-card">
-        <input type="text" placeholder="Add a new Card +"></input>
-      </div>
-    </div>
-    <div class="list-cards">
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card add-card">
-        <input type="text" placeholder="Add a new Card +"></input>
-      </div>
-    </div>
-    <div class="list-cards">
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card add-card">
-        <input type="text" placeholder="Add a new Card +"></input>
-      </div>
-    </div>
-    <div class="list-cards">
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card add-card">
-        <input type="text" placeholder="Add a new Card +"></input>
-      </div>
-    </div>
-    <div class="list-cards">
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card add-card">
-        <input type="text" placeholder="Add a new Card +"></input>
-      </div>
-    </div>
-    <div class="list-cards">
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card">
-        <p>Name of Card</p>
-        <p>edit</p>
-      </div>
-      <div class="card add-card">
-        <input type="text" placeholder="Add a new Card +"></input>
+      <div id="list-cards" class="list-cards">
+
+        <h3 id="card-object" contenteditable="true">Title of list of cards</h3>
+        <div id="cards">
+          <div id="card-object" class="card">
+            <p>Name of Card</p>
+            <p>edit</p>
+          </div>
+          <div id="card-object" class="card">
+            <p>Name of Card</p>
+            <p>edit</p>
+          </div>
+        </div>
+        <div id="card-object" class="card add-card">
+          <button type="button">Add a new card +</button>
+        </div>
       </div>
     </div>
     <div class="list-cards add-list">
-      <button type="button">Add a new list +</button>
+      <button id="add-new-list" type="button">Add a new list +</button>
     </div>
   </div>
+  <div class="modal">
   <div class="card-fullview">
-    <h2>Card title</h2>
-    <div class="members">
+    <div class="card-fullview-title">
+      <h2>Name of Card</h2>
+      <span class="close-modal">X</span>
+    </div>
+    <div id="members" class="members">
       <h3>Members</h3>
-      <p class="member">User1</p>
-      <p class="member">User2</p>
-      <p class="member">User3</p>
-      <button type="button" class="member">+</button>
+      <p id="member" class="member">User1 <span>x</span></p>
+      <p id="member" class="member">User2 <span>x</span></p>
+      <p id="member" class="member">User3 <span>x</span></p>
+      <div class="member-button">
+        <button type="button" class="member">+</button>
+        <div class="input-member-name">
+          <form onsubmit="false" id="member-form">
+            <input type="text" placeholder="type member's name"></input>
+          </form>
+        </div>
+      </div>
+
     </div>
     <div class="description">
       <h3>Desription</h3>
-      <p>Placeholder text for an actual description of the card.</p>
-      <p class="edit">Edit description</p>
+      <p id="description-text">Placeholder text for an actual description of the card. </p>
+      <p id="edit" class="edit">Edit</p>
     </div>
     <div class="labels">
       <h3>Labels</h3>
@@ -149,21 +125,23 @@
       <p>Label 5</p>
       <button type="button">+</button>
     </div>
-    <div class="comments">
+    <div id="comments" class="comments">
       <h3>Add a comment</h3>
-      <textarea type="text" placeholder="Write a comment..."></textarea>
-      <br><button type="button">Send</button>
+      <form id="comment-form">
+        <textarea id="comment-box" type="text" placeholder="Write a comment..."></textarea>
+      </form>
+      <br><form><button id="comment-button" type="button">Send</button></form>
       <br><p class="member">User1</p><span>Placeholder comment</span>
       <br><p class="member">User2</p><span>Placeholder comment</span>
       <br><p class="member">User3</p><span>Placeholder comment</span>
     </div>
+    <div class="add-delete">
+      <button id="add" type="button">Add</button>
+      <button id="delete" type="button">Delete</button>
+    </div>
   </div>
-  <div>
-    List Boards
   </div>
-  <div>
-    List Options
-  </div>
+
 
 </body>
 
