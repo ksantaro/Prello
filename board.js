@@ -2,6 +2,41 @@
 var username = "Kenny";
 //Data Structure
 var map = {};
+var ajaxLOLInfo;
+var listOfListsInfo;
+
+
+
+$.ajax({
+    // The URL for the request
+    url: "http://thiman.me:1337/kenneths/list",
+    // The data to send (will be converted to a query string)
+    // Whether this is a POST or GET request
+    type: "GET",
+    // The type of data we expect back
+    dataType : "json",
+})
+  // Code to run if the request succeeds (is done);
+  // The response is passed to the function
+  .done(function( json ) {
+    console.log(json);
+    ajaxLOLInfo = json;
+  })
+  // Code to run if the request fails; the raw request and
+  // status codes are passed to the function
+  .fail(function( xhr, status, errorThrown ) {
+    alert( "Sorry, there was a problem!" );
+    console.log( "Error: " + errorThrown );
+    console.log( "Status: " + status );
+    console.dir( xhr );
+  });
+  // Code to run regardless of success or failure;
+  //.always(function( xhr, status ) {
+  //  alert( "Runs No matter what" );
+  //});;
+  console.log(ajaxLOLInfo);
+
+
 var listOfListsInfo = [
   {
     id: "0",
@@ -23,6 +58,7 @@ var listOfListsInfo = [
         labels: ["Label 1", "Label 2"], comments: ["Comment1", "Comment2"], members: ["Temp Member"]}
     ]
   }];
+
   var board = $(".board #list-list");
   var col = 0;
   var row = 0;
@@ -46,35 +82,7 @@ var listOfListsInfo = [
     </div>
   </div> */
 $(document).ready(function () {
-  //PopulateUsinglistOflistsInfo
-  for(var num = 0; num <  listOfListsInfo.length; num++) {
-    var list = listOfListsInfo[num];
-    var listIndex = num;
-    var listId = list.id;
-    var listDiv = $('<div/>').addClass("list-cards").attr("id",listId);
-    var titleDiv = $('<h3/>').attr("contenteditable","true").html(list.title);
-    var cards = $('<div/>').addClass('cards');
-    col++;
-    row = 0;
-      for(var num2 = 0; num2 < list.cards.length; num2++) {
-        var cardIndex = num2;
-        var card = list.cards[num2];
-        var cardId = card.id;
-        map[cardId] = { listIndex, cardIndex }; // { listIndex: listIndex, cardIndex: cardIndex }
-        var cardDiv = $('<div/>').attr('id', cardId).addClass("card");
-        var cardTitle = $('<p/>').html(card.name);
-        cardDiv.append(cardTitle).append(`<p>edit/info</p>`); //Helpful later on data-cardid="${cardId}"
-        cards.append(cardDiv);
-        row++;
-      }
-    var removeButton = "<span class=\"remove-list-cards\">x</span>";
-    var titleContainer = $('<div/>').addClass("list-cards-title");
-    titleContainer.append(titleDiv).append(removeButton);
-    listDiv.append(titleContainer).append(cards);
-    listDiv.append("<div class=\"card add-card\"><button type=\"button\">Add a new card +</button></div>");
-    board.append(listDiv);
-  }
-  console.log("Debug",map, col, row);
+  
   //Selectors
   var body = $("body");
   var listOfLists = board.find(".list-cards"); //last one is a button'
@@ -123,6 +131,28 @@ $(document).ready(function () {
     });
       col++;
   });
+  //delete a list
+  board.on("click", ".list-cards .remove-list-cards", function() {
+    var listToDelete = $(this).parent().parent();
+    var listID = listToDelete.attr("id");
+    console.log(listID);
+    listToDelete.remove();
+    var newBoard = $(".board");
+    var newLists = $(".list-list .list-cards");
+    console.log(newLists);
+    listOfListsInfo.splice(listID, 1);
+    for(var num = 0; num < listOfListsInfo.length; num++) {
+      console.log($(newLists[num]));
+        $(newLists[num]).attr("id", "" + num);
+        listOfListsInfo[num].id = num;
+      for(var num2 = 0; num2 < listOfListsInfo[num].cards.length; num2++) {
+        $($(newLists[num]).find(".cards .card")[num2]).attr("id", "" + num + num2 );
+        console.log($($(newLists[num]).find(".cards .card")[num2]).attr("id"));
+        listOfListsInfo[num].cards[num2].id = "" + num + num2;
+      }
+    }
+    col--;
+  });
   //create a card
   board.on("click", ".list-cards button", function () {
     // Create in listOfListsInfo and Map
@@ -137,6 +167,25 @@ $(document).ready(function () {
     newCard.append("<p>"+ newCardInfo.name +"</p><p>edit/info</p>");
     console.log($(this).parent().parent().find(".cards"));
     $(this).parent().parent().find(".cards").append(newCard);
+  });
+  //Delete a Card
+  body.on("click", ".modal button.delete", function() {
+    var cardToDelete = $(this).parent().parent().parent();
+    var cardID = cardToDelete.attr("id");
+    console.log(cardID);
+    cardToDelete.remove();
+    console.log($(".board #" + cardID));
+    $(".board #" + cardID).remove();
+    var newBoard = $(".board");
+    var newLists = $(".list-list .list-cards");
+    var listIndex = map[cardID].listIndex;
+    var cardIndex = map[cardID].cardIndex;
+    listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
+    for(var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
+      //console.log($(newLists[num]));
+        $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
+        listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
+    }
   });
   //list cards title set in data Structure
   board.on("keyup ", ".list-cards h3", function (e) {
@@ -175,80 +224,6 @@ $(document).ready(function () {
     $("body").css("overflow", "auto");
   });
   //Open Fullview
-  /*
-  <div class="modal" id="22">
-  <div class="card-fullview">
-    <div class="card-fullview-title">
-      <h2 contenteditable="true">Name of Card</h2>
-      <span class="close-modal">X</span>
-    </div>
-    <div class="members">
-      <h3>Members</h3>
-      <p class="member">User2 <span>x</span></p>
-      <p class="member">User1 <span>x</span></p>
-      <p class="member">User3 <span>x</span></p>
-      <p class="member">User3 <span>x</span></p>
-      <p class="member">User3 <span>x</span></p>
-      <p class="member">User3 <span>x</span></p>
-      <p class="member">User3 <span>x</span></p>
-      <p class="member">User3 <span>x</span></p>
-
-      <div class="member-button">
-        <button type="button" class="member">+</button>
-        <div class="input-member-name">
-          <form onsubmit="false" id="member-form">
-            <input type="text" placeholder="type member's name"></input>
-          </form>
-        </div>
-      </div>
-
-    </div>
-    <div class="description">
-      <h3>Description</h3>
-      <p class="description-text" contenteditable="false">Placeholder text for an actual description of the card. </p>
-      <p class="edit">Edit</p>
-    </div>
-    <div class="labels">
-      <h3>Labels</h3>
-      <p class="label">Label 1<span>x</span></p>
-      <p class="label">Label 2<span>x</span></p>
-      <p class="label">Label 3<span>x</span></p>
-      <p class="label">Label 4<span>x</span></p>
-      <p class="label">Label 222222<span>x</span></p>
-      <p class="label">Label 222222<span>x</span></p>
-      <p class="label">Label 222222<span>x</span></p>
-      <p class="label">Label 222222<span>x</span></p>
-      <p class="label">Label 222222<span>x</span></p>
-      <div class="label-button">
-        <button type="button">+</button>
-        <div class="input-label-name">
-          <form onsubmit="false">
-            <input type="text" placeholder="type label name"></input>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div class="comments">
-      <h3>Add a comment</h3>
-      <form class="comment-form">
-        <textarea class="comment-box" type="text" placeholder="Write a comment..."></textarea>
-      <br><button class="comment-button" type="button">Send</button></form><br>
-      <div class="comment-line"><p class="member">User1</p><p class="comment-text">
-        Placeholder comment Placeholder comment Placeholder comment Placeholder comment
-        Placeholder comment Placeholder comment Placeholder comment Placeholder comment
-        Placeholder comment Placeholder comment Placeholder comment Placeholder comment
-      </p><span class="comment-delete">Delete Comment</span></div>
-      <div class="comment-line"><p class="member">User1</p><p class="comment-text">
-        Placeholder comment Placeholder comment Placeholder comment Placeholder comment
-        Placeholder comment Placeholder comment Placeholder comment Placeholder comment
-        Placeholder comment Placeholder comment Placeholder comment Placeholder comment
-      </p><span class="comment-delete">Delete Comment</span></div>
-    </div>
-    <div class="add-delete">
-      <button class="delete" type="button">Delete</button>
-    </div>
-  </div>
-  </div> */
   board.on("click", ".list-cards .cards .card", function () {
     console.log($(this).attr("id"));
     var cardID = $(this).attr("id");
@@ -268,7 +243,7 @@ $(document).ready(function () {
                 .append($("<span/>").addClass("close-modal").html("X"));
     var members = $("<div/>").addClass("members").append($("<h3/>").html("Members"));
           for (var num = 0; num < cardMembers.length; num++) {
-          members.append($("<p/>").addClass("member").html(cardMembers[num]).append($("<span/>").html("x")));
+          members.append($("<p/>").attr("id", "" + num).addClass("member").html(cardMembers[num]).append($("<span/>").html("x")));
           }
           members.append($("<div/>").addClass("member-button")
                     .append($("<button/>").attr("type","button").addClass("member").html("+"))
@@ -281,7 +256,7 @@ $(document).ready(function () {
                         .append($("<p/>").addClass("edit").html("Edit"));
     var labels = $("<div/>").addClass("labels").append($("<h3/>").html("Labels"));
       for (var num = 0; num < cardLabels.length; num++) {
-        labels.append($("<p/>").addClass("label").html(cardLabels[num]).append($("<span/>").html("x")));
+        labels.append($("<p/>").attr("id", "" + num).addClass("label").html(cardLabels[num]).append($("<span/>").html("x")));
       }
       labels.append($("<div/>").addClass("label-button")
                 .append($("<button/>").attr("type","button").addClass("label").html("+"))
@@ -296,7 +271,7 @@ $(document).ready(function () {
                     .append($("<div/>").addClass("comment-section"));
     for(var num = 0; num < cardComments.length; num++) {
       comments.find(".comment-section").append(
-        $("<div/>").addClass("comment-line")
+        $("<div/>").addClass("comment-line").attr("id","" + num)
         .append($("<p/>").addClass("member").html(username))
         .append($("<p/>").addClass("comment-text").html(cardComments[num]))
         .append($("<span/>").addClass("comment-delete").html("Delete Comment"))
@@ -311,9 +286,15 @@ $(document).ready(function () {
   //Fullview Save Title
   body.on("keyup ", ".modal .card-fullview-title h2", function (e) {
     //var parentId = $(this).parent().parent().attr("id"); //FIND ID OF THE CARD
+    var cardID = $(this).parent().parent().parent().attr("id");
+    var listIndex = map[cardID].listIndex;
+    var cardIndex = map[cardID].cardIndex;
     var newTitleValue = $(this).html();
     console.log(newTitleValue);
-    //listOfListsInfo[parentId].title = newTitleValue;
+    console.log(cardID);
+
+    listOfListsInfo[listIndex].cards[cardIndex].name = newTitleValue;
+    $($($("#" + cardID).find("p"))[0]).html(newTitleValue);
   });
   //Fullview - Show Add Member Dropdown
   body.on("click",".modal .members button", function() {
@@ -328,11 +309,14 @@ $(document).ready(function () {
     if(e.which == 13) {
         e.preventDefault();
         var memberFormValue = $(this).find("input").val();
-        console.log(memberFormValue.length);
         if (memberFormValue.length > 0) {
-          $(".member-button").before("<p class=\"member\">" + memberFormValue + "<span>x</span></p>");
+          var cardID = $(this).parent().parent().parent().parent().parent().attr("id");
+          var listIndex = map[cardID].listIndex;
+          var cardIndex = map[cardID].cardIndex;
+          $(".member-button").before("<p id=" + (listOfListsInfo[listIndex].members.length - 1) +" class=\"member\">" + memberFormValue + "<span>x</span></p>");
           $(this).find("input").val("");
           $(".input-member-name").css("display", "none");
+          listOfListsInfo[listIndex].cards[cardIndex].members.push(memberFormValue);
         }
         return false;
     }
@@ -352,21 +336,31 @@ $(document).ready(function () {
         var labelFormValue = $(this).find("input").val();
         console.log(labelFormValue.length);
         if (labelFormValue.length > 0) {
+          var cardID = $(this).parent().parent().parent().parent().parent().attr("id");
+          var listIndex = map[cardID].listIndex;
+          var cardIndex = map[cardID].cardIndex;
           $(".label-button").before("<p class=\"label\">" + labelFormValue + "<span>x</span></p>");
           $(this).find("input").val("");
           $(".input-label-name").css("display", "none");
+          listOfListsInfo[listIndex].cards[cardIndex].labels.push(labelFormValue);
         }
         return false;
     }
   });
+  //Fullview Delete a label
+
   //Fullview Edit Description
   body.on("click", ".modal .description .edit", function() {
     var descriptionText = $(this).parent().find(".description-text");
     if (descriptionText.attr("contenteditable") === "true") {
       var newDescription = descriptionText.html();
-      console.log(newDescription);
+      var cardID = $(this).parent().parent().parent().attr("id");
+      console.log(cardID);
+      var listIndex = map[cardID].listIndex;
+      var cardIndex = map[cardID].cardIndex;
       descriptionText.attr("contenteditable", "false");
       //Send to storage
+      listOfListsInfo[listIndex].cards[cardIndex].description = newDescription;
       $(this).html("edit");
       //Send val
     } else {
@@ -380,7 +374,10 @@ $(document).ready(function () {
     var commentText = $(this).parent().find("textarea").val();
     console.log(commentText);
     if (commentText.length > 0) {
-      console.log("im in");
+      var cardID = $(this).parent().parent().parent().parent().attr("id");
+      var listIndex = map[cardID].listIndex;
+      var cardIndex = map[cardID].cardIndex;
+      console.log(cardID);
       var commentLine = $("<div/>").addClass("comment-line");
       var member = $("<p/>").addClass("member").html(username);
       var comment = $("<p/>").addClass("comment-text").html(commentText)
@@ -388,6 +385,7 @@ $(document).ready(function () {
       commentLine.append(member).append(comment).append(commentDelete);
       $(this).parent().parent().find(".comment-section").prepend(commentLine);
       $(this).parent().find("textarea").val("");
+      listOfListsInfo[listIndex].cards[cardIndex].comments.unshift(commentText);
     }
   });
 
