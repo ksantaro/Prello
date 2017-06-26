@@ -1,3 +1,45 @@
+::-webkit-scrollbar {
+    width: 15px;
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 20px;
+  width: 100%;
+  background-color: transparent;
+
+}
+
+::-webkit-scrollbar-track {
+}
+
+::-webkit-scrollbar-track:horizontal {
+  background-color: #015e94;
+  border: 4px solid #0079bf;
+  border-radius: 14px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: #9a9a9a;
+    height: 6px;
+    border: 4px solid #f1f1f1;
+    border-radius: 14px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    border-radius: 14px;
+    height: 10px;
+    border: 4px solid #0079bf !important;
+    background-color: #65aadc;
+    border-right: none;
+    border-left: none;
+
+}
 body{
   white-space: nowrap;
   margin-top: 2.6rem;
@@ -146,12 +188,17 @@ margin: auto;
 font-size: 1.4rem;
 }
 
-.dropdown, .member-button {
+.dropdown, .member-button, .label-button {
   position: relative;
   display: inline-block;
 }
 
-.dropdown-content, .input-member-name {
+.label-button {
+  background-color: transparent !important;
+}
+
+
+.dropdown-content, .input-member-name, .input-label-name {
   display: none;
   position: absolute;
   background-color: #f9f9f9;
@@ -160,6 +207,7 @@ font-size: 1.4rem;
   z-index: 1;
   font-size: 1.2rem;
 }
+
 
 .dropdown-content a, .options-content p, .options-content a, .menu-title {
 
@@ -390,6 +438,7 @@ font-size: 1.4rem;
   margin-right: .3125rem;
   max-height: 33rem;
     overflow: auto;
+  border-radius: 4px;
 }
 
 .list-cards h3 {
@@ -466,13 +515,14 @@ font-size: 1.4rem;
 }
 
 .card-fullview {
-  background-color: #ffffff;
+  background-color: #f1f1f1;
   min-height: 36rem;
   width: 45rem;
   margin-left: -22.5rem;
   margin-right: auto;
   margin-top: .625rem;
-  padding-left: .625rem;
+  padding-left: 1rem;
+  border-radius: 3.5px;
   padding-top: .625rem;
   position: fixed;
     left: 50%;
@@ -480,6 +530,7 @@ font-size: 1.4rem;
     overflow-y: scroll;
     top: 40px;
   max-height: 20rem;
+
 }
 
 .modal {
@@ -498,23 +549,37 @@ font-size: 1.4rem;
 
 .card-fullview h2 {
   margin-top: 0;
+  margin-bottom: 10px;
 }
 
 .card-fullview-title h2 {
   display: inline-block;
-  width: auto;
+  width: 90%;
+  white-space: pre-wrap;
+  overflow: hidden;
+  padding: .25rem 1px;
+}
+
+.card-fullview-title h2:focus {
+  background-color: white;
+  outline-color: #c5c5c5;
 }
 
 .card-fullview-title span {
   float: right;
   margin-right: 1.2rem;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   color: #717171;
+  font-family: monospace;
 }
 
 .card-fullview-title span:hover {
   color: black;
   cursor: pointer;
+}
+
+.card-fullview .members h3 {
+  margin-bottom: 1px;
 }
 
 .add-delete {
@@ -524,7 +589,7 @@ font-size: 1.4rem;
   padding-top: 1rem;
 }
 
-.add-delete #add {
+.add-delete .add {
   background-color: #00b100;
   display: inline-block;
   border: none;
@@ -538,16 +603,16 @@ font-size: 1.4rem;
   border-bottom: 1px solid #004600;
 }
 
-.add-delete #add:hover {
+.add-delete .add:hover {
   background-color: #006d00;
 }
 
-.add-delete #delete {
+.add-delete .delete {
   background-color: #ff2424;
   display: inline-block;
   border: none;
   color: white;
-  padding: .7rem 1.7rem;
+  padding: .7rem .7rem;
   font-size: 1rem;
   font-weight: 600;
   border: 1px solid #880000;
@@ -556,7 +621,7 @@ font-size: 1.4rem;
   border-bottom: 1px solid #460000;
 }
 
-.add-delete #delete:hover {
+.add-delete .delete:hover {
   background-color: #6f0000
 }
 
@@ -584,14 +649,21 @@ font-size: 1.4rem;
   padding: .75rem;
   padding-right: .5rem;
   cursor: pointer;
+  margin-bottom: 0px;
 }
 
-.member-button {
-
+.labels button:hover .input-label-name {
+  display: block;
 }
 
-.input-member-name {
+.input-label-name form, .input-label-name form input {
+  background-color: white !important;
+}
 
+
+.members, .labels {
+  width: 85%;
+  white-space: initial;
 }
 
 .member span {
@@ -616,6 +688,7 @@ font-size: 1.4rem;
   padding: .875rem;
   padding-bottom: .8125rem;
   width: 3.875rem;
+  margin-top: 16px;
 }
 
 .member:hover {
@@ -628,7 +701,8 @@ font-size: 1.4rem;
 
 .description p {
   white-space: pre-wrap;
-  width: 95%;
+  width: 85%;
+  min-height: 4rem;
 }
 
 .description p.edit{
@@ -644,10 +718,49 @@ font-size: 1.4rem;
   background-color: #b3b3b3;
 }
 
+.description-text[contenteditable="true"] {
+  border: 1px solid #dedede;
+    border-bottom: 2px solid #d9d9d9;
+    border-right: 1px solid #cecdcd;
+    background-color: #fbfbfb;
+}
+
+.description-text[contenteditable="false"] {
+  min-height: auto;
+}
+
+.description-text[contenteditable="true"]:focus {
+  outline: none;
+}
+
 .labels p {
   display: inline-block;
   margin-right: .4375rem;
   padding: .75rem;
+  padding-right: .35rem;
+  cursor: pointer;
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+.label span {
+  line-height: 0rem;
+  vertical-align: top;
+  position: relative;
+  margin-left: 0px;
+  font-family: monospace;
+  top: -2px;
+  font-size: 1.2rem;
+  margin: 0;
+  padding: 0;
+  color: transparent;
+  background-color: transparent !important;
+  padding-left: 5px;
+}
+
+.label:hover span {
+  color: inherit;
+  background-color: inherit;
 }
 
 .labels button {
@@ -658,10 +771,11 @@ font-size: 1.4rem;
   padding: .875rem;
   padding-bottom: .8125rem;
   width: 3.875rem;
+  background-color: rgba(243, 175, 29, 0.77) !important;
 }
 
 .labels button:hover {
-  background-color: gray;
+  background-color: rgba(243, 175, 29, 1) !important;
 }
 
 .labels *:nth-child(4n+1) {
@@ -697,11 +811,51 @@ font-size: 1.4rem;
 }
 
 .labels h3:first-child {
-  background-color: white;
+  background-color: transparent;
+  margin-bottom: .3rem;
+  margin-top: 2rem
 }
 
 .labels h3:first-child:hover {
-  background-color: white;
+  background-color: transparent;
+}
+
+.comment-line {
+  border-bottom:  1px solid #d2d2d2;
+  margin-bottom: 14px;
+  padding-left: 5px;
+  padding-bottom: 15px;
+  width: 90%;
+}
+
+.comment-line:last-child {
+  border-bottom: none;
+}
+
+.comment-line .member {
+    margin-bottom: 0;
+}
+
+.comment-delete {
+  height: inherit;
+  vertical-align: middle;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.comment-delete:hover {
+  color:red;
+}
+
+.comment-text {
+  max-width: 95%;
+    white-space: initial;
+    background-color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    border: 1px solid #e0dada;
 }
 
 .comments textarea {
@@ -709,6 +863,7 @@ font-size: 1.4rem;
   border-color: #dedede;
   width: 25rem;
   height: 7.1875rem;
+  max-width: 85%;
 }
 
 .comments textarea:focus {
