@@ -4,9 +4,43 @@ var username = "Kenny";
 var map = {};
 var ajaxLOLInfo;
 var listOfListsInfo;
-
-
-
+var populateLists = [];
+$.get("http://thiman.me:1337/kenneths/list", function (json) {
+    console.log(json);
+    ajaxLOLInfo = json;
+    var listOfListsInfo = ajaxLOLInfo;
+    //PopulateUsinglistOflistsInfo
+    for(var num = 0; num <  listOfListsInfo.length; num++) {
+      populateLists.push(listOfListsInfo[num]);
+      var list = listOfListsInfo[num];
+      var listIndex = num;
+      var listId = list.id;
+      var listDiv = $('<div/>').addClass("list-cards").attr("id",listId);
+      var titleDiv = $('<h3/>').attr("contenteditable","true").html(list.title);
+      var cards = $('<div/>').addClass('cards');
+      col++;
+      row = 0;
+        for(var num2 = 0; num2 < list.cards.length; num2++) {
+          var cardIndex = num2;
+          var card = list.cards[num2];
+          var cardId = card.id;
+          map[cardId] = { listIndex, cardIndex }; // { listIndex: listIndex, cardIndex: cardIndex }
+          var cardDiv = $('<div/>').attr('id', cardId).addClass("card");
+          var cardTitle = $('<p/>').html(card.name);
+          cardDiv.append(cardTitle).append(`<p>edit/info</p>`); //Helpful later on data-cardid="${cardId}"
+          cards.append(cardDiv);
+          row++;
+        }
+      var removeButton = "<span class=\"remove-list-cards\">x</span>";
+      var titleContainer = $('<div/>').addClass("list-cards-title");
+      titleContainer.append(titleDiv).append(removeButton);
+      listDiv.append(titleContainer).append(cards);
+      listDiv.append("<div class=\"card add-card\"><button type=\"button\">Add a new card +</button></div>");
+      board.append(listDiv);
+    }
+    console.log("Debug",map, col, row);
+  });
+/*
 $.ajax({
     // The URL for the request
     url: "http://thiman.me:1337/kenneths/list",
@@ -21,6 +55,37 @@ $.ajax({
   .done(function( json ) {
     console.log(json);
     ajaxLOLInfo = json;
+    var listOfListsInfo = ajaxLOLInfo;
+    //PopulateUsinglistOflistsInfo
+    for(var num = 0; num <  listOfListsInfo.length; num++) {
+      populateLists.push(listOfListsInfo[num]);
+      var list = listOfListsInfo[num];
+      var listIndex = num;
+      var listId = list.id;
+      var listDiv = $('<div/>').addClass("list-cards").attr("id",listId);
+      var titleDiv = $('<h3/>').attr("contenteditable","true").html(list.title);
+      var cards = $('<div/>').addClass('cards');
+      col++;
+      row = 0;
+        for(var num2 = 0; num2 < list.cards.length; num2++) {
+          var cardIndex = num2;
+          var card = list.cards[num2];
+          var cardId = card.id;
+          map[cardId] = { listIndex, cardIndex }; // { listIndex: listIndex, cardIndex: cardIndex }
+          var cardDiv = $('<div/>').attr('id', cardId).addClass("card");
+          var cardTitle = $('<p/>').html(card.name);
+          cardDiv.append(cardTitle).append(`<p>edit/info</p>`); //Helpful later on data-cardid="${cardId}"
+          cards.append(cardDiv);
+          row++;
+        }
+      var removeButton = "<span class=\"remove-list-cards\">x</span>";
+      var titleContainer = $('<div/>').addClass("list-cards-title");
+      titleContainer.append(titleDiv).append(removeButton);
+      listDiv.append(titleContainer).append(cards);
+      listDiv.append("<div class=\"card add-card\"><button type=\"button\">Add a new card +</button></div>");
+      board.append(listDiv);
+    }
+    console.log("Debug",map, col, row);
   })
   // Code to run if the request fails; the raw request and
   // status codes are passed to the function
@@ -34,9 +99,10 @@ $.ajax({
   //.always(function( xhr, status ) {
   //  alert( "Runs No matter what" );
   //});;
+  */
   console.log(ajaxLOLInfo);
-
-
+listOfListsInfo = populateLists;
+/*
 var listOfListsInfo = [
   {
     id: "0",
@@ -58,7 +124,7 @@ var listOfListsInfo = [
         labels: ["Label 1", "Label 2"], comments: ["Comment1", "Comment2"], members: ["Temp Member"]}
     ]
   }];
-
+*/
   var board = $(".board #list-list");
   var col = 0;
   var row = 0;
@@ -82,7 +148,7 @@ var listOfListsInfo = [
     </div>
   </div> */
 $(document).ready(function () {
-  
+
   //Selectors
   var body = $("body");
   var listOfLists = board.find(".list-cards"); //last one is a button'
@@ -119,17 +185,28 @@ $(document).ready(function () {
 
   //add a new list
   addNewList.click( function () {
-    console.log(board);
-    var newList ="<div class=\"list-cards\" id=\""+ col +"\"><div class=\"list-cards-title\"><h3 contenteditable=\"true\">Title</h3><span class=\"remove-list-cards\">x</span></div><div class=\"cards\"></div><div id=\"card-object\" class=\"card add-card\"><button type=\"button\">Add a new card +</button></div></div>";
-    board.append(newList);
     listOfLists = board.find(".list-cards");
-    console.log(listOfLists, board);
-    listOfListsInfo.push({
-      id: "" + col,
-      title: "Title",
-      cards: []
-    });
+    $.post("http://thiman.me:1337/kenneths/list", function(response) {});
+    $.get("http://thiman.me:1337/kenneths/list", function(response) {
+      var uListID = response[response.length - 1]._id
+      var newObjectList = {
+        _id: uListID,
+        id: "" + col,
+        title: "Title",
+        cards: [],
+        key: "kenneths"
+      }
+      listOfListsInfo.push(newObjectList);
+      var newList ="<div class=\"list-cards\" id=\""+ col +"\"><div class=\"list-cards-title\"><h3 contenteditable=\"true\">Title</h3><span class=\"remove-list-cards\">x</span></div><div class=\"cards\"></div><div id=\"card-object\" class=\"card add-card\"><button type=\"button\">Add a new card +</button></div></div>";
       col++;
+      board.append(newList);
+      $.ajax({
+        url: "http://thiman.me:1337/kenneths/list/" + uListID,
+        data : newObjectList,
+        type: "PATCH",
+        dataType: "json"
+      });
+    });
   });
   //delete a list
   board.on("click", ".list-cards .remove-list-cards", function() {
@@ -142,24 +219,64 @@ $(document).ready(function () {
     console.log(newLists);
     listOfListsInfo.splice(listID, 1);
     for(var num = 0; num < listOfListsInfo.length; num++) {
-      console.log($(newLists[num]));
         $(newLists[num]).attr("id", "" + num);
         listOfListsInfo[num].id = num;
       for(var num2 = 0; num2 < listOfListsInfo[num].cards.length; num2++) {
         $($(newLists[num]).find(".cards .card")[num2]).attr("id", "" + num + num2 );
-        console.log($($(newLists[num]).find(".cards .card")[num2]).attr("id"));
         listOfListsInfo[num].cards[num2].id = "" + num + num2;
       }
     }
+    console.log("listOfListsInfo",listOfListsInfo);
     col--;
+    $.get("http://thiman.me:1337/kenneths/list", function (response) {
+      var uListID = response[listID]._id;
+      $.ajax({
+        url: "http://thiman.me:1337/kenneths/list/" + uListID,
+        type: "DELETE",
+        dataType: "json"
+      });
+        for(var num = 0; num < listOfListsInfo.length; num++) {
+          var uListID = listOfListsInfo[num]._id;
+          $.ajax({
+            url: "http://thiman.me:1337/kenneths/list/" + uListID,
+            data: listOfListsInfo[num],
+            type: "PATCH",
+            dataType: "json"
+          });
+          for(var num2 = 0; num2 < listOfListsInfo[num].cards.length; num2++) {
+            var uCardID = listOfListsInfo[num].cards[num2]._id
+            $.ajax({
+              url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+              data: listOfListsInfo[num].cards[num2],
+              type: "PATCH",
+              dataType: "json"
+            });
+          }
+        }
+    });
   });
   //create a card
   board.on("click", ".list-cards button", function () {
     // Create in listOfListsInfo and Map
     var listIndex = $(this).parent().parent().attr("id");
     var cardIndex = listOfListsInfo[listIndex].cards.length;
+    $.get("http://thiman.me:1337/kenneths/list/", function(json) {
+      var uListID = json[listIndex]._id;
+      $.post("http://thiman.me:1337/kenneths/list/" + uListID + "/card", function (response) {
+          console.log(response);
+          var uCardID = response.cards[cardIndex]._id;
+          listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
+          console.log(listOfListsInfo[listIndex].cards[cardIndex]);
+          $.ajax({
+            url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+            data: listOfListsInfo[listIndex].cards[cardIndex],
+            type: "PATCH",
+            dataType: "json"
+          });
+      });
+    });
     var newCardInfo = { id: "" + listIndex + cardIndex, name: "Card Name", description: "Placeholder description",
-      labels: [], comments: [], members: [username]};
+      labels: ["Example Label"], comments: ["I am an example comment"], members: [username]};
     listOfListsInfo[listIndex].cards.push(newCardInfo);
     map[newCardInfo.id] = { listIndex, cardIndex };
     //create in page
@@ -180,18 +297,41 @@ $(document).ready(function () {
     var newLists = $(".list-list .list-cards");
     var listIndex = map[cardID].listIndex;
     var cardIndex = map[cardID].cardIndex;
-    listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
+    var uListID = listOfListsInfo[listIndex]._id;
+    var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
     for(var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
       //console.log($(newLists[num]));
         $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
         listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
     }
+    $.ajax({
+      url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+      type: "DELETE",
+      dataType: "json"
+    }).done(function(response) {
+      listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
+      for (var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
+        $.ajax({
+          url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+          data: listOfListsInfo[listIndex].cards[num],
+          type: "PATCH",
+          dataType: "json"
+        })
+      }
+    });
   });
   //list cards title set in data Structure
   board.on("keyup ", ".list-cards h3", function (e) {
     var parentId = $(this).parent().parent().attr("id");
     var newTitleValue = $(this).html();
     listOfListsInfo[parentId].title = newTitleValue;
+    var uListID = listOfListsInfo[parentId]._id;
+    $.ajax({
+      url: "http://thiman.me:1337/kenneths/list/" + uListID,
+      data: listOfListsInfo[parentId],
+      type: "PATCH",
+      dataType: "json"
+    });
   });
   //Show Board dropdown
   boardBtn.click(function () {
@@ -290,11 +430,18 @@ $(document).ready(function () {
     var listIndex = map[cardID].listIndex;
     var cardIndex = map[cardID].cardIndex;
     var newTitleValue = $(this).html();
+    var uListID = listOfListsInfo[listIndex]._id;
+    var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
     console.log(newTitleValue);
     console.log(cardID);
-
     listOfListsInfo[listIndex].cards[cardIndex].name = newTitleValue;
     $($($("#" + cardID).find("p"))[0]).html(newTitleValue);
+    $.ajax({
+      url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+      data: listOfListsInfo[listIndex].cards[cardIndex],
+      type: "PATCH",
+      dataType: "json"
+    });
   });
   //Fullview - Show Add Member Dropdown
   body.on("click",".modal .members button", function() {
@@ -313,13 +460,43 @@ $(document).ready(function () {
           var cardID = $(this).parent().parent().parent().parent().parent().attr("id");
           var listIndex = map[cardID].listIndex;
           var cardIndex = map[cardID].cardIndex;
-          $(".member-button").before("<p id=" + (listOfListsInfo[listIndex].members.length - 1) +" class=\"member\">" + memberFormValue + "<span>x</span></p>");
+          var uListID = listOfListsInfo[listIndex]._id;
+          var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
+          $(".member-button").before("<p id=" + (listOfListsInfo[listIndex].cards[cardIndex].members.length) +" class=\"member\">" + memberFormValue + "<span>x</span></p>");
           $(this).find("input").val("");
           $(".input-member-name").css("display", "none");
           listOfListsInfo[listIndex].cards[cardIndex].members.push(memberFormValue);
+          $.ajax({
+            url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+            data: listOfListsInfo[listIndex].cards[cardIndex],
+            type: "PATCH",
+            dataType: "json"
+          });
         }
         return false;
     }
+  });
+  // Fullview Delete A Member
+  body.on("click", ".modal .members p", function () {
+    var cardID = $(this).parent().parent().parent().attr("id");
+    var listIndex = map[cardID].listIndex;
+    var cardIndex = map[cardID].cardIndex;
+    var uListID = listOfListsInfo[listIndex]._id;
+    var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
+    var memberID = parseInt($(this).attr("id"));
+    var listOfMembers = $(this).parent();
+    $(this).remove();
+    listOfMembers = listOfMembers.find("p");
+    for (var num = 0; num < listOfMembers.length; num++) {
+      $(listOfMembers[num]).attr("id", "" + num);
+    }
+    listOfListsInfo[listIndex].cards[cardIndex].members.splice(memberID, 1);
+    $.ajax({
+      url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+      data: listOfListsInfo[listIndex].cards[cardIndex],
+      type: "PATCH",
+      dataType: "json"
+    });
   });
   //Fullview - Show Add Label Dropdown
   body.on("click",".modal .labels button", function() {
@@ -329,7 +506,7 @@ $(document).ready(function () {
       $(".input-label-name").css("display", "block");
     }
   });
-  //Fullview Show Add A Label
+  //Fullview Add A Label
   body.on("keypress", ".modal .labels form", function(e) {
     if(e.which == 13) {
         e.preventDefault();
@@ -339,16 +516,44 @@ $(document).ready(function () {
           var cardID = $(this).parent().parent().parent().parent().parent().attr("id");
           var listIndex = map[cardID].listIndex;
           var cardIndex = map[cardID].cardIndex;
-          $(".label-button").before("<p class=\"label\">" + labelFormValue + "<span>x</span></p>");
+          var uListID = listOfListsInfo[listIndex]._id;
+          var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
+          $(".label-button").before("<p id=" + (listOfListsInfo[listIndex].cards[cardIndex].labels.length) +" class=\"label\">" + labelFormValue + "<span>x</span></p>");
           $(this).find("input").val("");
           $(".input-label-name").css("display", "none");
           listOfListsInfo[listIndex].cards[cardIndex].labels.push(labelFormValue);
+          $.ajax({
+            url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+            data: listOfListsInfo[listIndex].cards[cardIndex],
+            type: "PATCH",
+            dataType: "json"
+          });
         }
         return false;
     }
   });
   //Fullview Delete a label
-
+  body.on("click", ".modal .labels p", function () {
+    var cardID = $(this).parent().parent().parent().attr("id");
+    var listIndex = map[cardID].listIndex;
+    var cardIndex = map[cardID].cardIndex;
+    var uListID = listOfListsInfo[listIndex]._id;
+    var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
+    var labelID = parseInt($(this).attr("id"));
+    var listOfLabels = $(this).parent();
+    $(this).remove();
+    listOfLabels = listOfLabels.find("p");
+    for (var num = 0; num < listOfLabels.length; num++) {
+      $(listOfLabels[num]).attr("id", "" + num);
+    }
+    listOfListsInfo[listIndex].cards[cardIndex].labels.splice(labelID, 1);
+    $.ajax({
+      url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+      data: listOfListsInfo[listIndex].cards[cardIndex],
+      type: "PATCH",
+      dataType: "json"
+    });
+  });
   //Fullview Edit Description
   body.on("click", ".modal .description .edit", function() {
     var descriptionText = $(this).parent().find(".description-text");
@@ -358,10 +563,18 @@ $(document).ready(function () {
       console.log(cardID);
       var listIndex = map[cardID].listIndex;
       var cardIndex = map[cardID].cardIndex;
+      var uListID = listOfListsInfo[listIndex]._id;
+      var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
       descriptionText.attr("contenteditable", "false");
       //Send to storage
       listOfListsInfo[listIndex].cards[cardIndex].description = newDescription;
       $(this).html("edit");
+      $.ajax({
+        url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+        data: listOfListsInfo[listIndex].cards[cardIndex],
+        type: "PATCH",
+        dataType: "json"
+      });
       //Send val
     } else {
       descriptionText.attr("contenteditable", "true");
@@ -377,8 +590,10 @@ $(document).ready(function () {
       var cardID = $(this).parent().parent().parent().parent().attr("id");
       var listIndex = map[cardID].listIndex;
       var cardIndex = map[cardID].cardIndex;
+      var uListID = listOfListsInfo[listIndex]._id;
+      var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
       console.log(cardID);
-      var commentLine = $("<div/>").addClass("comment-line");
+      var commentLine = $("<div/>").addClass("comment-line").attr("id", "" + (1 + listOfListsInfo[listIndex].cards[cardIndex].members.length));
       var member = $("<p/>").addClass("member").html(username);
       var comment = $("<p/>").addClass("comment-text").html(commentText)
       var commentDelete = $("<span/>").addClass("comment-delete").html("Delete Comment");
@@ -386,8 +601,39 @@ $(document).ready(function () {
       $(this).parent().parent().find(".comment-section").prepend(commentLine);
       $(this).parent().find("textarea").val("");
       listOfListsInfo[listIndex].cards[cardIndex].comments.unshift(commentText);
+      var listOfComments = $(this).parent().parent().find(".comment-section").find(".comment-line");
+      for (var num = 0; num < listOfComments.length; num++) {
+        $(listOfComments[num]).attr("id", "" + num);
+      }
+      $.ajax({
+        url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+        data: listOfListsInfo[listIndex].cards[cardIndex],
+        type: "PATCH",
+        dataType: "json"
+      });
     }
   });
-
+  //Delete A Comment
+  body.on("click",".modal .comments .comment-section .comment-line .comment-delete", function() {
+    var cardID = $(this).parent().parent().parent().parent().parent().attr("id");
+    var listIndex = map[cardID].listIndex;
+    var cardIndex = map[cardID].cardIndex;
+    var uListID = listOfListsInfo[listIndex]._id;
+    var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
+    var commentID = parseInt($($(this).parent()).attr("id"));
+    var listOfComments = $(this).parent().parent();
+    $(this).parent().remove();
+    listOfComments = listOfComments.find(".comment-line");
+    for (var num = 0; num < listOfComments.length; num++) {
+      $(listOfComments[num]).attr("id", "" + num);
+    }
+    listOfListsInfo[listIndex].cards[cardIndex].comments.splice(commentID, 1);
+    $.ajax({
+      url: "http://thiman.me:1337/kenneths/list/" + uListID + "/card/" + uCardID,
+      data: listOfListsInfo[listIndex].cards[cardIndex],
+      type: "PATCH",
+      dataType: "json"
+    });
+  });
 
 });
