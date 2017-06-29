@@ -45,12 +45,7 @@ router.patch("/", function(req,res) {
 });
 
 router.delete("/:_id", function(req,res) {
-  List.remove({
-        _id: req.params.user_id
-    }, function (err, user) {
-        if (err) return res.send(err);
-        res.json({ message: 'Deleted' });
-    });
+  
 });
 
 module.exports = router;
