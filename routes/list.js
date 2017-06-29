@@ -44,7 +44,7 @@ router.patch("/", function(req,res) {
 
 });
 
-router.delete("/", function(req,res) {
+router.delete("/:_id", function(req,res) {
   List.remove({
         _id: req.params.user_id
     }, function (err, user) {
