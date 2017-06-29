@@ -34,14 +34,15 @@ router.post("/", function(req,res) {
     if (err) {
       console.log(err);
     } else {
+      console.log("Meow");
       res.json(list);
     }
   });
 });
 
-router.patch("/:_id", function(req,res) {
+router.patch("/:id", function(req,res) {
   List.findOneAndUpdate({
-    _id: req.params._id
+    _id: req.params.id
   },
   {$set: {title: req.body.title,
          id: req.body.id }},
@@ -50,14 +51,13 @@ router.patch("/:_id", function(req,res) {
     if (err) {console.log(err)
     } else {
       console.log(newList);
-      res.status(204);
    }});
 });
 
-router.delete("/:_id", function(req,res) {
+router.delete("/:id", function(req,res) {
   console.log("One List");
   List.findOne({
-    _id : req.params._id,
+    _id : req.params.id,
   })
     .exec(function(err, list) {
       if (err) {
