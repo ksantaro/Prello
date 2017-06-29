@@ -34,18 +34,44 @@ router.post("/", function(req,res) {
     if (err) {
       console.log(err);
     } else {
-      console.log('meow');
       res.json(list);
     }
   });
 });
 
-router.patch("/", function(req,res) {
-
+router.patch("/:_id", function(req,res) {
+  List.findOneAndUpdate({
+    _id: req.params._id
+  },
+  {$set: {title: req.body.title,
+         id: req.body.id }},
+  {upsert: true},
+  function(err, newList) {
+    if (err) {console.log(err)
+    } else {
+      console.log(newList);
+      res.status(204);
+   }});
 });
 
 router.delete("/:_id", function(req,res) {
-  
+  console.log("One List");
+  List.findOne({
+    _id : req.params._id,
+  })
+    .exec(function(err, list) {
+      if (err) {
+        console.log(err);
+      } else {
+        List.remove(function(err, rList) {
+          if (err) {console.log(err)
+          } else {
+
+          }
+        })
+        res.json(list);
+      }
+    });
 });
 
 module.exports = router;
