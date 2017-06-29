@@ -11,11 +11,17 @@ var List = mongoose.model('List',
   id: String,
 });
 
+//var Card = mongoose.model("Card");
+
 
 
 router.get("/", function(req, res) {
 //  res.send("hihihihih");
-  res.json([]);
+  List.find(function (err, list) {
+    if (err) console.log(err);
+    res.json(list); // Space Ghost is a talk show host.
+  });
+
 });
 
 router.post("/", function(req,res) {
@@ -37,6 +43,14 @@ router.post("/", function(req,res) {
 router.patch("/", function(req,res) {
 
 });
-//router.delete
+
+router.delete("/", function(req,res) {
+  List.remove({
+        _id: req.params.user_id
+    }, function (err, user) {
+        if (err) return res.send(err);
+        res.json({ message: 'Deleted' });
+    });
+});
 
 module.exports = router;
