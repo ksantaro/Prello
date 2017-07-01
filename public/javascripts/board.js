@@ -260,33 +260,24 @@ $(document).ready(function () {
     // Create in listOfListsInfo and Map
     var listIndex = $(this).parent().parent().attr("id");
     var cardIndex = listOfListsInfo[listIndex].cards.length;
-    var uListID = listOfListsInfo[listIndex]._id;
-    console.log(uListID);
-    $.post("http://localhost:3000/list/" + uListID + "/card", function (response) {
-      console.log(response);
-    });
-    $.get("http://localhost:3000/list", function(response) {
-      console.log(response);
-      var uCardID = response[listIndex].cards[cardIndex]._id;
-      listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
-      var cardInfo = listOfListsInfo[listIndex].cards[cardIndex]
-      $.ajax({
-        url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-        data: {
-          name : cardInfo.name,
-          description : cardInfo.description,
-          labels : cardInfo.labels[0],
-          members : cardInfo.members[0],
-          comments : cardInfo.comments[0],
-          id : cardInfo.id,
-          _id : cardInfo._id,
-        },
-        type: "PATCH",
-        dataType: "json"
+    $.get("http://localhost:3000/list/", function(json) {
+      console.log(json);
+      var uListID = json[listIndex]._id;
+      console.log("uListId", uListId);
+      $.post("http://localhost:3000/list/" + uListID + "/card", function (response) {})
+        .done(function (response) {
+          console.log(response.cards, cardIndex);
+          var uCardID = response.cards[cardIndex]._id;
+          listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
+          console.log(listOfListsInfo[listIndex].cards[cardIndex]);
+          $.ajax({
+            url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
+            data: listOfListsInfo[listIndex].cards[cardIndex],
+            type: "PATCH",
+            dataType: "json"
+          });
       });
-      console.log(response);
     });
-
     var newCardInfo = { id: "" + listIndex + cardIndex, name: "Card Name", description: "Placeholder description",
       labels: ["Example Label"], comments: ["I am an example comment"], members: [username]};
     listOfListsInfo[listIndex].cards.push(newCardInfo);
@@ -450,7 +441,7 @@ $(document).ready(function () {
     $($($("#" + cardID).find("p"))[0]).html(newTitleValue);
     $.ajax({
       url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-      data: {name : listOfListsInfo[listIndex].cards[cardIndex].name},
+      data: listOfListsInfo[listIndex].cards[cardIndex],
       type: "PATCH",
       dataType: "json"
     });

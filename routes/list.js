@@ -1,19 +1,14 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var List = require('../models/list.js');
+var Card = require('../models/card.js')
 
 var router = express.Router();
 //mongoose.connect('mongodb://localhost/prello'); // Port Num can be specified
 
-var List = mongoose.model('List',
-{
-  title: String,
-  cards: Array,
-  id: String,
-});
+
 
 //var Card = mongoose.model("Card");
-
-
 
 router.get("/", function(req, res) {
 //  res.send("hihihihih");
@@ -40,6 +35,31 @@ router.post("/", function(req,res) {
   });
 });
 
+router.post("/:id/card/", function(req,res) {
+  var newCard = new Card(
+    {
+      name: req.body.name,
+      id: req.body.id,
+      description: req.body.description,
+      labels: req.body.labels,
+      members: req.body.members,
+      comments: req.body.comments,
+    }
+  );
+  List.findOneAndUpdate({
+    _id: req.params.id
+  },
+  {$push: {cards: newCard}},
+  {upsert: true},
+  function(err, newCard) {
+    if (err) {console.log(err)
+    } else {
+      console.log(newCard);
+      res.json();
+   }});
+   //res.json();
+});
+
 router.patch("/:id", function(req,res) {
   List.findOneAndUpdate({
     _id: req.params.id
@@ -51,26 +71,44 @@ router.patch("/:id", function(req,res) {
     if (err) {console.log(err)
     } else {
       console.log(newList);
+      res.json(newList);
    }});
 });
 
-router.delete("/:id", function(req,res) {
-  console.log("One List");
-  List.findOne({
-    _id : req.params.id,
-  })
-    .exec(function(err, list) {
-      if (err) {
-        console.log(err);
-      } else {
-        List.remove(function(err, rList) {
-          if (err) {console.log(err)
-          } else {
+router.patch("/:id/card/:id2", function(req,res) {
+  List.update(
+    {'cards._id' : mongoose.Types.ObjectId(req.params.id2)},
+    {$set: {"cards.$": req.body}},
+    {new: true}
+  ).then(function(err, updatedList) {
+    console.log(err);
+    console.log(updatedList);
+    res.end();
+  });
+});
 
-          }
-        })
-        res.json(list);
-      }
+router.delete("/:id", function(req,res) {
+  List.findOneAndRemove({
+    _id: req.params.id
+  }, function(err, list) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log(list);
+      res.json(list);
+    }
+  });
+});
+
+router.delete("/:id/card/:id2", function(req,res) {
+  List.update(
+    {_id : req.params.id},
+    {$pull: {cards: { _id: req.params.id2}}},
+    {upsert: false},
+    function(err, updatedList) {
+      console.log(err);
+      console.log(updatedList);
+      res.json(updatedList);
     });
 });
 
