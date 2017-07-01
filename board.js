@@ -269,15 +269,15 @@ $(document).ready(function () {
       console.log(response);
       var uCardID = response[listIndex].cards[cardIndex]._id;
       listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
-      var cardInfo = listOfListsInfo[listIndex].cards[cardIndex]
+      var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
       $.ajax({
         url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
         data: {
           name : cardInfo.name,
           description : cardInfo.description,
-          labels : cardInfo.labels[0],
-          members : cardInfo.members[0],
-          comments : cardInfo.comments[0],
+          labels : cardInfo.labels,
+          members : cardInfo.members,
+          comments : cardInfo.comments,
           id : cardInfo.id,
           _id : cardInfo._id,
         },
@@ -325,7 +325,7 @@ $(document).ready(function () {
       for (var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
         $.ajax({
           url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-          data: listOfListsInfo[listIndex].cards[num],
+          data: {id : listOfListsInfo[listIndex].cards[num].id},
           type: "PATCH",
           dataType: "json"
         })
@@ -448,11 +448,16 @@ $(document).ready(function () {
     console.log(cardID);
     listOfListsInfo[listIndex].cards[cardIndex].name = newTitleValue;
     $($($("#" + cardID).find("p"))[0]).html(newTitleValue);
+    console.log(uListID, uCardID);
+    var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
     $.ajax({
       url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-      data: {name : listOfListsInfo[listIndex].cards[cardIndex].name},
+      data: cardInfo,
       type: "PATCH",
-      dataType: "json"
+      dataType: "json",
+      success: function() {
+        console.log("success");
+      },
     });
   });
   //Fullview - Show Add Member Dropdown

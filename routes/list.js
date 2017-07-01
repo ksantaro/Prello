@@ -54,9 +54,9 @@ router.post("/:id/card/", function(req,res) {
   function(err, newCard) {
     if (err) {console.log(err)
     } else {
-      console.log(newCard);
       res.json();
    }});
+
    //res.json();
 });
 
@@ -70,7 +70,6 @@ router.patch("/:id", function(req,res) {
   function(err, newList) {
     if (err) {console.log(err)
     } else {
-      console.log(newList);
       res.json(newList);
    }});
 });
@@ -78,11 +77,18 @@ router.patch("/:id", function(req,res) {
 router.patch("/:id/card/:id2", function(req,res) {
   List.update(
     {'cards._id' : mongoose.Types.ObjectId(req.params.id2)},
-    {$set: {"cards.$": req.body}},
-    {new: true}
+    /*
+    {$set: {"cards.$.name" : req.body.name,
+            "cards.$.description" : req.body.description,
+            "cards.$.id" : req.body.id,
+            "cards.$._id" : req.body._id},
+     $push: {"cards.$.members" : req.body.members,
+             "cards.$.comments" : req.body.comments,
+             "cards.$.labels" : req.body.labels}},
+             */
+    {$set: {"cards.$" : req.body}},
+    {upsert: true}
   ).then(function(err, updatedList) {
-    console.log(err);
-    console.log(updatedList);
     res.end();
   });
 });

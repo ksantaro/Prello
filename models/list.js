@@ -1,8 +1,10 @@
+var cardSchema = require('../models/card.js')
+
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var schema = new Schema({
     title: String,
-    cards: Array,
+    cards: [cardSchema.schema],
     id: String,
 });
 
