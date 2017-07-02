@@ -12,6 +12,16 @@ $.get("http://localhost:3000/list", function (json) {
     //PopulateUsinglistOflistsInfo
     for(var num = 0; num <  listOfListsInfo.length; num++) {
       populateLists.push(listOfListsInfo[num]);
+      for (var num2 = 0; num2 < listOfListsInfo[num].cards.length; num2++) {
+        var pListCard = populateLists[num].cards[num2];
+        pListCard.members = pListCard["members[]"];
+        pListCard.labels = pListCard["labels[]"];
+        pListCard.comments = pListCard["comments[]"];
+        delete pListCard["members[]"];
+        delete pListCard["labels[]"];
+        delete pListCard["comments[]"];
+
+      }
       var list = listOfListsInfo[num];
       var listIndex = num;
       var listId = list.id;
@@ -260,24 +270,34 @@ $(document).ready(function () {
     // Create in listOfListsInfo and Map
     var listIndex = $(this).parent().parent().attr("id");
     var cardIndex = listOfListsInfo[listIndex].cards.length;
-    $.get("http://localhost:3000/list/", function(json) {
-      console.log(json);
-      var uListID = json[listIndex]._id;
-      console.log("uListId", uListId);
-      $.post("http://localhost:3000/list/" + uListID + "/card", function (response) {})
-        .done(function (response) {
-          console.log(response.cards, cardIndex);
-          var uCardID = response.cards[cardIndex]._id;
-          listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
-          console.log(listOfListsInfo[listIndex].cards[cardIndex]);
-          $.ajax({
-            url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-            data: listOfListsInfo[listIndex].cards[cardIndex],
-            type: "PATCH",
-            dataType: "json"
-          });
-      });
+    var uListID = listOfListsInfo[listIndex]._id;
+    console.log(uListID);
+    $.post("http://localhost:3000/list/" + uListID + "/card", function (response) {
+      console.log(response);
     });
+    $.get("http://localhost:3000/list", function(response) {
+      console.log(response);
+      var uCardID = response[listIndex].cards[cardIndex]._id;
+      listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
+      var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
+      console.log(cardInfo.labels);
+      $.ajax({
+        url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
+        data: {
+          name : cardInfo.name,
+          description : cardInfo.description,
+          labels : cardInfo.labels,
+          members : cardInfo.members,
+          comments : cardInfo.comments,
+          id : cardInfo.id,
+          _id : cardInfo._id,
+        },
+        type: "PATCH",
+        dataType: "json"
+      });
+      console.log(response);
+    });
+
     var newCardInfo = { id: "" + listIndex + cardIndex, name: "Card Name", description: "Placeholder description",
       labels: ["Example Label"], comments: ["I am an example comment"], members: [username]};
     listOfListsInfo[listIndex].cards.push(newCardInfo);
@@ -302,25 +322,31 @@ $(document).ready(function () {
     var cardIndex = map[cardID].cardIndex;
     var uListID = listOfListsInfo[listIndex]._id;
     var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
-    for(var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
-      //console.log($(newLists[num]));
-        $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
-        listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
-    }
     $.ajax({
       url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
       type: "DELETE",
       dataType: "json"
     }).done(function(response) {
-      listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
-      for (var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
-        $.ajax({
-          url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-          data: listOfListsInfo[listIndex].cards[num],
-          type: "PATCH",
-          dataType: "json"
-        })
-      }
+      $.ajax({
+        url: "http://localhost:3000/list/",
+        type: "GET",
+        dataType: "json"
+      }).done(function(response) {
+        listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
+        for(var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
+          //console.log($(newLists[num]));
+            $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
+            listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
+            console.log(listOfListsInfo[listIndex].cards[num].id);
+            uCardID = listOfListsInfo[listIndex].cards[num]._id;
+            $.ajax({
+              url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
+              data: listOfListsInfo[listIndex].cards[num],
+              type: "PATCH",
+              dataType: "json"
+            });
+        }
+      });
     });
   });
   //list cards title set in data Structure
@@ -439,11 +465,25 @@ $(document).ready(function () {
     console.log(cardID);
     listOfListsInfo[listIndex].cards[cardIndex].name = newTitleValue;
     $($($("#" + cardID).find("p"))[0]).html(newTitleValue);
+    console.log(uListID, uCardID);
+    var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
+    console.log(cardInfo.members);
     $.ajax({
       url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-      data: listOfListsInfo[listIndex].cards[cardIndex],
+      data: {
+        name : cardInfo.name,
+        description : cardInfo.description,
+        labels : cardInfo.labels,
+        members : cardInfo.members,
+        comments : cardInfo.comments,
+        id : cardInfo.id,
+        _id : cardInfo._id,
+      },
       type: "PATCH",
-      dataType: "json"
+      dataType: "json",
+      success: function() {
+        console.log("success");
+      },
     });
   });
   //Fullview - Show Add Member Dropdown
@@ -469,9 +509,18 @@ $(document).ready(function () {
           $(this).find("input").val("");
           $(".input-member-name").css("display", "none");
           listOfListsInfo[listIndex].cards[cardIndex].members.push(memberFormValue);
+          var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
           $.ajax({
             url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-            data: listOfListsInfo[listIndex].cards[cardIndex],
+            data: {
+              name : cardInfo.name,
+              description : cardInfo.description,
+              labels : cardInfo.labels,
+              members : cardInfo.members,
+              comments : cardInfo.comments,
+              id : cardInfo.id,
+              _id : cardInfo._id,
+            },
             type: "PATCH",
             dataType: "json"
           });
@@ -525,9 +574,18 @@ $(document).ready(function () {
           $(this).find("input").val("");
           $(".input-label-name").css("display", "none");
           listOfListsInfo[listIndex].cards[cardIndex].labels.push(labelFormValue);
+          var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
           $.ajax({
             url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-            data: listOfListsInfo[listIndex].cards[cardIndex],
+            data: {
+              name : cardInfo.name,
+              description : cardInfo.description,
+              labels : cardInfo.labels,
+              members : cardInfo.members,
+              comments : cardInfo.comments,
+              id : cardInfo.id,
+              _id : cardInfo._id,
+            },
             type: "PATCH",
             dataType: "json"
           });
@@ -608,9 +666,10 @@ $(document).ready(function () {
       for (var num = 0; num < listOfComments.length; num++) {
         $(listOfComments[num]).attr("id", "" + num);
       }
+      var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
       $.ajax({
         url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-        data: listOfListsInfo[listIndex].cards[cardIndex],
+        data: cardInfo,
         type: "PATCH",
         dataType: "json"
       });

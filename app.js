@@ -8,7 +8,8 @@ var cors = require('cors');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var list = require("./routes/list")
+var list = require("./routes/list");
+
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/prello'); // Port Num can be specified
@@ -36,7 +37,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use("/list", list);
-
+app.get('/login', function(req, res) {
+    res.render('login');
+});
+app.get('/boards', function(req, res) {
+    res.render('boards');
+});
 
 
 app.use('/', index);

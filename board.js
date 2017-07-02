@@ -12,6 +12,16 @@ $.get("http://localhost:3000/list", function (json) {
     //PopulateUsinglistOflistsInfo
     for(var num = 0; num <  listOfListsInfo.length; num++) {
       populateLists.push(listOfListsInfo[num]);
+      for (var num2 = 0; num2 < listOfListsInfo[num].cards.length; num2++) {
+        var pListCard = populateLists[num].cards[num2];
+        pListCard.members = pListCard["members[]"];
+        pListCard.labels = pListCard["labels[]"];
+        pListCard.comments = pListCard["comments[]"];
+        delete pListCard["members[]"];
+        delete pListCard["labels[]"];
+        delete pListCard["comments[]"];
+
+      }
       var list = listOfListsInfo[num];
       var listIndex = num;
       var listId = list.id;
@@ -270,6 +280,7 @@ $(document).ready(function () {
       var uCardID = response[listIndex].cards[cardIndex]._id;
       listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
       var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
+      console.log(cardInfo.labels);
       $.ajax({
         url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
         data: {
@@ -311,25 +322,31 @@ $(document).ready(function () {
     var cardIndex = map[cardID].cardIndex;
     var uListID = listOfListsInfo[listIndex]._id;
     var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
-    for(var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
-      //console.log($(newLists[num]));
-        $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
-        listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
-    }
     $.ajax({
       url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
       type: "DELETE",
       dataType: "json"
     }).done(function(response) {
-      listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
-      for (var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
-        $.ajax({
-          url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-          data: {id : listOfListsInfo[listIndex].cards[num].id},
-          type: "PATCH",
-          dataType: "json"
-        })
-      }
+      $.ajax({
+        url: "http://localhost:3000/list/",
+        type: "GET",
+        dataType: "json"
+      }).done(function(response) {
+        listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
+        for(var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
+          //console.log($(newLists[num]));
+            $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
+            listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
+            console.log(listOfListsInfo[listIndex].cards[num].id);
+            uCardID = listOfListsInfo[listIndex].cards[num]._id;
+            $.ajax({
+              url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
+              data: listOfListsInfo[listIndex].cards[num],
+              type: "PATCH",
+              dataType: "json"
+            });
+        }
+      });
     });
   });
   //list cards title set in data Structure
@@ -450,9 +467,18 @@ $(document).ready(function () {
     $($($("#" + cardID).find("p"))[0]).html(newTitleValue);
     console.log(uListID, uCardID);
     var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
+    console.log(cardInfo.members);
     $.ajax({
       url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-      data: cardInfo,
+      data: {
+        name : cardInfo.name,
+        description : cardInfo.description,
+        labels : cardInfo.labels,
+        members : cardInfo.members,
+        comments : cardInfo.comments,
+        id : cardInfo.id,
+        _id : cardInfo._id,
+      },
       type: "PATCH",
       dataType: "json",
       success: function() {
@@ -483,9 +509,18 @@ $(document).ready(function () {
           $(this).find("input").val("");
           $(".input-member-name").css("display", "none");
           listOfListsInfo[listIndex].cards[cardIndex].members.push(memberFormValue);
+          var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
           $.ajax({
             url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-            data: listOfListsInfo[listIndex].cards[cardIndex],
+            data: {
+              name : cardInfo.name,
+              description : cardInfo.description,
+              labels : cardInfo.labels,
+              members : cardInfo.members,
+              comments : cardInfo.comments,
+              id : cardInfo.id,
+              _id : cardInfo._id,
+            },
             type: "PATCH",
             dataType: "json"
           });
@@ -539,9 +574,18 @@ $(document).ready(function () {
           $(this).find("input").val("");
           $(".input-label-name").css("display", "none");
           listOfListsInfo[listIndex].cards[cardIndex].labels.push(labelFormValue);
+          var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
           $.ajax({
             url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-            data: listOfListsInfo[listIndex].cards[cardIndex],
+            data: {
+              name : cardInfo.name,
+              description : cardInfo.description,
+              labels : cardInfo.labels,
+              members : cardInfo.members,
+              comments : cardInfo.comments,
+              id : cardInfo.id,
+              _id : cardInfo._id,
+            },
             type: "PATCH",
             dataType: "json"
           });
@@ -622,9 +666,10 @@ $(document).ready(function () {
       for (var num = 0; num < listOfComments.length; num++) {
         $(listOfComments[num]).attr("id", "" + num);
       }
+      var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
       $.ajax({
         url: "http://localhost:3000/list/" + uListID + "/card/" + uCardID,
-        data: listOfListsInfo[listIndex].cards[cardIndex],
+        data: cardInfo,
         type: "PATCH",
         dataType: "json"
       });

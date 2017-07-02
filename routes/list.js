@@ -38,14 +38,21 @@ router.post("/", function(req,res) {
 router.post("/:id/card/", function(req,res) {
   var newCard = new Card(
     {
-      name: req.body.name,
-      id: req.body.id,
-      description: req.body.description,
-      labels: req.body.labels,
-      members: req.body.members,
-      comments: req.body.comments,
+      name: '',
+      id: '',
+      description: '',
+      'labels[]': [],
+      'members[]': [],
+      'comments[]' : [],
     }
   );
+  List.findByIdAndUpdate(req.params.id, {
+    $push: {cards: newCard}
+  }, {upsert: true}, function(err, card) {
+    if (err) console.log(err);
+    else res.json(card);
+  });
+  /*
   List.findOneAndUpdate({
     _id: req.params.id
   },
@@ -56,7 +63,7 @@ router.post("/:id/card/", function(req,res) {
     } else {
       res.json();
    }});
-
+   */
    //res.json();
 });
 
@@ -75,13 +82,20 @@ router.patch("/:id", function(req,res) {
 });
 
 router.patch("/:id/card/:id2", function(req,res) {
+  console.log(req.body);
+  console.log(req.body.members);
   List.update(
     {'cards._id' : mongoose.Types.ObjectId(req.params.id2)},
-    /*
+/*
     {$set: {"cards.$.name" : req.body.name,
             "cards.$.description" : req.body.description,
             "cards.$.id" : req.body.id,
-            "cards.$._id" : req.body._id},
+            "cards.$._id" : req.body._id,//},
+            "cards.$.members" : req.body.members,
+            "cards.$.comments" : req.body.comments,
+            "cards.$.labels" : req.body.labels,
+          }},*/
+    /*
      $push: {"cards.$.members" : req.body.members,
              "cards.$.comments" : req.body.comments,
              "cards.$.labels" : req.body.labels}},
