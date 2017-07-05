@@ -5,52 +5,32 @@
   <link rel="stylesheet" href="stylesheets/styles.css"/>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript" src="javascripts/boards.js" async></script>
-  <title>Boards</title>
+  <title>Boards <%= username %></title>
 </head>
 
 <body id="white-board">
   <header>
     <h1>Boards</h1>
   </header>
-  <nav id="main-navbar">
-    <div id="third-width">
-      <div class="dropdown">
-        <p id="boards-btn">Boards</p>
-        <div class="dropdown-content">
-          <a href="#">Individual Board Name 1</a>
-          <a href="#">Individual Board Name 2</a>
-          <a href="#">Individual Board Name 3</a>
-          <a href="#">Individual Board Name 4</a>
-          <a href="#">Add Board +</a>
-
-        </div>
-      </div>
-    </div>
-    <div id="third-width34">
-      <p>Prello</p>
-    </div>
-    <div id="third-width">
-      <a href="./login.html"><p>Sign Out</p></a>
-    </div>
-  </nav>
+  <% include navigation.ejs %>
   <div class="list-boards">
     <div class="row-list">
-      <a href="./board.html"><p>Individual Board Title 1 </p></a>
+      <a href="./index"><p>Individual Board Title 1 </p></a>
       <button type="button">Create New Board</button>
       <br>
     </div>
     <div class="row-list">
-      <a href="./board.html"><p>Individual Board Title 2 </p></a>
+      <a href="./"><p>Individual Board Title 2 </p></a>
       <button type="button">Create New Board</button>
       <br>
     </div>
     <div class="row-list">
-      <a href="./board.html"><p>Individual Board Title 3 </p></a>
+      <a href="./"><p>Individual Board Title 3 </p></a>
       <button type="button">Create New Board</button>
       <br>
     </div>
     <div class="row-list">
-      <a href="./board.html"><p>Individual Board Title 4 </p></a>
+      <a href="./"><p>Individual Board Title 4 </p></a>
       <button type="button">Create New Board</button>
       <br>
     </div>

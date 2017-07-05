@@ -1,5 +1,19 @@
 //function ListOfCards(title, listOfCards, addButton, parent);
 var username = "Kenny";
+var curDate;
+function formatCurDate(date) {
+  var hours = date.getHours();
+  var minutes = date.getMinutes();
+  var month = date.getMonth() + 1;
+  var year = date.getFullYear().toString().substr(-2);
+  var day = date.getDate();
+  var ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+  minutes = minutes < 10 ? '0'+minutes : minutes;
+  var strTime = month + "/" + day + '/' + year + ", " + hours + ':' + minutes + ' ' + ampm + " - ";
+  return strTime;
+}
 //Data Structure
 var map = {};
 var ajaxLOLInfo;
@@ -17,10 +31,13 @@ $.get("http://localhost:3000/list", function (json) {
         pListCard.members = pListCard["members[]"];
         pListCard.labels = pListCard["labels[]"];
         pListCard.comments = pListCard["comments[]"];
+        pListCard.dates = pListCard["dates[]"];
+        pListCard.users = pListCard["users[]"]
         delete pListCard["members[]"];
         delete pListCard["labels[]"];
         delete pListCard["comments[]"];
-
+        delete pListCard["dates[]"];
+        delete pListCard["users[]"];
       }
       var list = listOfListsInfo[num];
       var listIndex = num;
@@ -158,7 +175,9 @@ var listOfListsInfo = [
     </div>
   </div> */
 $(document).ready(function () {
-
+  var userTitle = $("title").html().substring(8);
+  username = userTitle;
+  console.log("userTitle", userTitle);
   //Selectors
   var body = $("body");
   var listOfLists = board.find(".list-cards"); //last one is a button'
@@ -289,6 +308,8 @@ $(document).ready(function () {
           labels : cardInfo.labels,
           members : cardInfo.members,
           comments : cardInfo.comments,
+          users : cardInfo.users,
+          dates : cardInfo.dates,
           id : cardInfo.id,
           _id : cardInfo._id,
         },
@@ -299,7 +320,7 @@ $(document).ready(function () {
     });
 
     var newCardInfo = { id: "" + listIndex + cardIndex, name: "Card Name", description: "Placeholder description",
-      labels: ["Example Label"], comments: ["I am an example comment"], members: [username]};
+      labels: ["Example Label"], comments: [], dates: [], members: []};
     listOfListsInfo[listIndex].cards.push(newCardInfo);
     map[newCardInfo.id] = { listIndex, cardIndex };
     //create in page
@@ -403,7 +424,9 @@ $(document).ready(function () {
     var cardDescription = cardInfo.description;
     var cardLabels = cardInfo.labels;
     var cardComments = cardInfo.comments;
+    var cardDates = cardInfo.dates;
     var cardMembers = cardInfo.members;
+    var cardUsers = cardInfo.users;
     //Build fullview
     var modal = $("<div/>").addClass("modal").attr("id", cardID);
     var fullview = $("<div/>").addClass("card-fullview");
@@ -441,8 +464,9 @@ $(document).ready(function () {
     for(var num = 0; num < cardComments.length; num++) {
       comments.find(".comment-section").append(
         $("<div/>").addClass("comment-line").attr("id","" + num)
-        .append($("<p/>").addClass("member").html(username))
+        .append($("<p/>").addClass("member").html(cardUsers[num]))
         .append($("<p/>").addClass("comment-text").html(cardComments[num]))
+        .append($("<span/>").addClass("comment-date").html(cardDates[num]))
         .append($("<span/>").addClass("comment-delete").html("Delete Comment"))
       );
     }
@@ -476,6 +500,8 @@ $(document).ready(function () {
         labels : cardInfo.labels,
         members : cardInfo.members,
         comments : cardInfo.comments,
+        users : cardInfo.users,
+        dates: cardInfo.dates,
         id : cardInfo.id,
         _id : cardInfo._id,
       },
@@ -518,6 +544,8 @@ $(document).ready(function () {
               labels : cardInfo.labels,
               members : cardInfo.members,
               comments : cardInfo.comments,
+              users : cardInfo.users,
+              dates : cardInfo.dates,
               id : cardInfo.id,
               _id : cardInfo._id,
             },
@@ -583,6 +611,8 @@ $(document).ready(function () {
               labels : cardInfo.labels,
               members : cardInfo.members,
               comments : cardInfo.comments,
+              users: cardInfo.users,
+              dates : cardInfo.dates,
               id : cardInfo.id,
               _id : cardInfo._id,
             },
@@ -645,6 +675,9 @@ $(document).ready(function () {
   //Fullview Add Comment
   body.on("click",".modal .comments .comment-button", function(e) {
     e.preventDefault();
+    curDate = new Date();
+    var curUser = username;
+    var timeString = formatCurDate(curDate);
     var commentText = $(this).parent().find("textarea").val();
     console.log(commentText);
     if (commentText.length > 0) {
@@ -655,13 +688,16 @@ $(document).ready(function () {
       var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
       console.log(cardID);
       var commentLine = $("<div/>").addClass("comment-line").attr("id", "" + (1 + listOfListsInfo[listIndex].cards[cardIndex].members.length));
-      var member = $("<p/>").addClass("member").html(username);
-      var comment = $("<p/>").addClass("comment-text").html(commentText)
+      var member = $("<p/>").addClass("member").html(curUser);
+      var comment = $("<p/>").addClass("comment-text").html(commentText);
+      var commentTime = $("<span/>").addClass("comment-date").html(timeString);
       var commentDelete = $("<span/>").addClass("comment-delete").html("Delete Comment");
-      commentLine.append(member).append(comment).append(commentDelete);
+      commentLine.append(member).append(comment).append(commentTime).append(commentDelete);
       $(this).parent().parent().find(".comment-section").prepend(commentLine);
       $(this).parent().find("textarea").val("");
       listOfListsInfo[listIndex].cards[cardIndex].comments.unshift(commentText);
+      listOfListsInfo[listIndex].cards[cardIndex].dates.unshift(timeString);
+      listOfListsInfo[listIndex].cards[cardIndex].users.unshift(username);
       var listOfComments = $(this).parent().parent().find(".comment-section").find(".comment-line");
       for (var num = 0; num < listOfComments.length; num++) {
         $(listOfComments[num]).attr("id", "" + num);

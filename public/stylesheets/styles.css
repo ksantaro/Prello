@@ -836,12 +836,17 @@ font-size: 1.4rem;
     margin-bottom: 0;
 }
 
+.comment-date {
+  height: inherit;
+  vertical-align: middle;
+  margin-left: 5px;
+}
+
 .comment-delete {
   height: inherit;
   vertical-align: middle;
   text-decoration: underline;
   cursor: pointer;
-  margin-left: 5px;
 }
 
 .comment-delete:hover {

@@ -19,20 +19,20 @@
     </div>
   </nav>
   <h2>Sign Up</h2>
-  <form id="sign-up-form">
+  <form id="sign-up-form" action="/users/login" method="POST">
   <div class="form-center">
-    <p>Username<br><input id="username" type="text" class="input-text" placeholder="e.g., John Doe" required></input></p>
-    <p>Email<br><input id="email" class="input-text" type="email" placeholder="e.g., jdoe.gmail.com" required></p>
-    <p>Password<br><input id="password" class="input-text" type="password" placeholder="" required></input></p>
+    <p>Username<br><input id="username" name="username" type="text" class="input-text" placeholder="e.g., John Doe" required></input></p>
+    <p>Email<br><input id="email" name="email" class="input-text" type="email" placeholder="e.g., jdoe@gmail.com" required></p>
+    <p>Password<br><input id="password" name="password" class="input-text" type="password" placeholder="" required></input></p>
     <p>Confirm Password<br><input id="confirm-password" class="input-text" type="password" placeholder="" required></input></p>
     <p><input type="checkbox"></input>Remember Me? <input type="submit" value="Sign Up"></p>
   </div>
   </form>
   <h2>Login</h2>
-  <form id="login-form">
+  <form id="login-form" action="/users/boards" method="POST">
   <div class="form-center">
-    <p>Username<br><input id="username" class="input-text" type="text" placeholder="e.g., John Doe" required></input></p>
-    <p>Password<br><input id="confirm-password" class="input-text" type="password" placeholder="" required></input></p>
+    <p>Email<br><input id="username" name="email" class="input-text" type="text" placeholder="e.g., jdoe@gmail.com" required></input></p>
+    <p>Password<br><input id="confirm-password" name="password" class="input-text" type="password" placeholder="" required></input></p>
     <p><input type="checkbox"></input>Remember Me?<input type="submit" value="Log in"></p>
   </div>
   </form>

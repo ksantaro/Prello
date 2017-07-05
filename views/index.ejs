@@ -5,31 +5,11 @@
   <link rel="stylesheet" href="stylesheets/styles.css"/>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript" src="javascripts/board.js" async></script>
-  <title>Board</title>
+  <title>Board - <%= username %</title>
 </head>
 
 <body id="blue-background">
-  <nav id="main-navbar">
-    <div id="third-width">
-      <div class="dropdown">
-        <p id="boards-btn">Boards</p>
-        <div class="dropdown-content">
-          <a href="#">Individual Board Name 1</a>
-          <a href="#">Individual Board Name 2</a>
-          <a href="#">Individual Board Name 3</a>
-          <a href="#">Individual Board Name 4</a>
-          <a href="#">Add Board +</a>
-
-        </div>
-      </div>
-    </div>
-    <div id="third-width34">
-      <p>Prello</p>
-    </div>
-    <div id="third-width">
-      <a href="./login.html"><p>Sign Out</p></a>
-    </div>
-  </nav>
+  <% include navigation.ejs %>
   <h1 id="h1-white">Board Title</h1>
   <header>
     <div class="options">
