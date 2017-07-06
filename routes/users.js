@@ -44,8 +44,6 @@ router.post("/boards", function(req, res) {
   });
 });
 
-router.get("/username", function(req, res, next) {
-  res.json(res.locals.user.username);
-});
+
 
 module.exports = router;

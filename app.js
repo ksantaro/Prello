@@ -14,8 +14,15 @@ var User = require('./models/user.js');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/prello'); // Port Num can be specified
 var db = mongoose.connection;
-
-
+/*
+function(req, res, next) {
+  if(req.session.user) {
+    next;
+  } else {
+    res.redirect
+  }
+}
+*/
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log("mongo connected");

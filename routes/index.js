@@ -10,6 +10,10 @@ var sessions = require('client-sessions');
 var User = require('../models/user.js');
 
 /* GET home page. */
+router.get('/:id', function(req, res, next) {
+
+});
+
 router.get('/', function(req, res, next) {
   if (req.session && req.session.user) {
     console.log("session is made");
@@ -31,6 +35,10 @@ router.get('/', function(req, res, next) {
 
 router.get("/test", function(req, res) {
   res.send("hihihihih");
+});
+
+router.get("/username", function(req, res, next) {
+  res.json(req.session.user.username);
 });
 
 module.exports = router;

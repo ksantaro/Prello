@@ -19,6 +19,7 @@ var map = {};
 var ajaxLOLInfo;
 var listOfListsInfo;
 var populateLists = [];
+
 $.get("http://localhost:3000/list", function (json) {
     console.log(json);
     ajaxLOLInfo = json;
@@ -174,10 +175,11 @@ var listOfListsInfo = [
       <button type="button">Add a new card +</button>
     </div>
   </div> */
+
 $(document).ready(function () {
-  var userTitle = $("title").html().substring(8);
-  username = userTitle;
-  console.log("userTitle", userTitle);
+  $.get("http://localhost:3000/username",function(response) {
+    username = response;
+  });
   //Selectors
   var body = $("body");
   var listOfLists = board.find(".list-cards"); //last one is a button'
@@ -320,7 +322,7 @@ $(document).ready(function () {
     });
 
     var newCardInfo = { id: "" + listIndex + cardIndex, name: "Card Name", description: "Placeholder description",
-      labels: ["Example Label"], comments: [], dates: [], members: []};
+      labels: ["Example Label"], comments: [], dates: [], members: [], users: []};
     listOfListsInfo[listIndex].cards.push(newCardInfo);
     map[newCardInfo.id] = { listIndex, cardIndex };
     //create in page

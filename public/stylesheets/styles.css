@@ -52,6 +52,11 @@ button {
   cursor: pointer;
 }
 
+div.row-list {
+  display: inline-block;
+  white-space: normal;
+}
+
 #login-page {
   text-align: center;
 }
@@ -122,7 +127,7 @@ overflow: auto;
   color: white;
 }
 
-#white-board .list-boards p, #white-board .list-boards button {
+#white-board .list-boards p, #white-board .list-boards button, #white-board .list-boards a {
   padding-right: 3rem;
     background-color: #0067a2;
     color: white;
@@ -133,7 +138,49 @@ overflow: auto;
     font-size: 1.1rem;
     font-weight: 600;
     display: inline-block;
+    margin-right: 6px;
+    min-width: 180px;
 }
+
+.add-new-board {
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+  padding-left: 12px;
+}
+
+.add-new-board h2 {
+  width: 92%;
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.add-new-board span {
+  font-family: monospace;
+    font-size: 20px;
+    color: gray;
+  cursor: pointer;
+}
+
+.add-new-board input {
+  width: 95%;
+  font-size: 20px;
+  display: block;
+  margin-bottom: 15px;
+
+}
+
+.add-new-board button {
+  margin-bottom: 15px;
+    padding: 6px 16px;
+    color: white;
+    background-color: #00ad00;
+    border: solid 2px #009f00;
+    font-size: 15px;
+    font-weight: 600;
+}
+
 
 #white-board .list-boards p:hover {
   background-color: #004871;
