@@ -10,8 +10,8 @@ var sessions = require('client-sessions');
 var User = require('../models/user.js');
 
 /* GET home page. */
-router.get('/:id', function(req, res, next) {
-
+router.get('/index/:id', function(req, res, next) {
+  res.render('index.ejs', {url : req.params.id});
 });
 
 router.get('/', function(req, res, next) {
@@ -40,5 +40,9 @@ router.get("/test", function(req, res) {
 router.get("/username", function(req, res, next) {
   res.json(req.session.user.username);
 });
-
+/*
+router.get('/:id', function(req, res) {
+  res.render('index', {uID : req.params.id});
+});
+*/
 module.exports = router;

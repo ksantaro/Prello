@@ -9,6 +9,7 @@ var sessions = require('client-sessions');
 var index = require('./routes/index');
 var users = require('./routes/users');
 var list = require("./routes/list");
+var board = require("./routes/board")
 var User = require('./models/user.js');
 
 var mongoose = require('mongoose');
@@ -90,6 +91,8 @@ app.get('/index', function(req, res) {
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/board', board);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

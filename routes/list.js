@@ -2,6 +2,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var List = require('../models/list.js');
 var Card = require('../models/card.js');
+var Board = require('../models/board.js');
 
 var router = express.Router();
 //mongoose.connect('mongodb://localhost/prello'); // Port Num can be specified
@@ -9,6 +10,9 @@ var router = express.Router();
 
 
 //var Card = mongoose.model("Card");
+
+
+
 
 
 

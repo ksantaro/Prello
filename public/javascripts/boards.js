@@ -9,13 +9,18 @@ var body = $("body");
 var menuAddButton = $(".dropdown-content a:last-child");
 var username;
 
-var listOfBoards = [
-  {
-    name : "Temp Board 1", id : "0", user : "Temp1"
-  }, {
-    name: "Temp Board 2", id : "1", user : "Temp2"
+var listOfBoards = [];
+
+$.get("http://localhost:3000/board", function(response) {
+  console.log(response);
+  for (var num = 0; num < response.length; num++) {
+    listOfBoards.push(response[num]);
   }
-];
+  for (var num = 0; num < listOfBoards.length; num++) {
+    addButton.before($("<a/>").attr("href","./index/" + response[num]._id).html(listOfBoards[num].name));
+    menuAddButton.before($("<a/>").attr("href","./index/" + + response[num]._id).html(listOfBoards[num].name));
+  }
+});
 
 $.get("http://localhost:3000/username",function(response) {
   username = response;
@@ -23,10 +28,7 @@ $.get("http://localhost:3000/username",function(response) {
 
 $(document).ready(function () {
 
-  for (var num = 0; num < listOfBoards.length; num++) {
-    addButton.before($("<a/>").attr("href","./index").html(listOfBoards[num].name));
-    menuAddButton.before($("<a/>").attr("href","./index").html(listOfBoards[num].name));
-  }
+
 
   boardBtn.click(function () {
     console.log(dropdownContent.css("display") );
@@ -71,13 +73,22 @@ $(document).ready(function () {
   body.on("click", ".modal button", function(e) {
     var titleValue = $($(this).parent().find("input")).val();
     var newBoard = {
-      name : titleValue, id : listOfBoards.length + "", user : username,
+      name : titleValue, id : listOfBoards.length + "", user : username, lists : [],
     };
-    listOfBoards.push(newBoard);
-    addButton.before($("<a/>").attr("href","./index").html(titleValue));
-    menuAddButton.before($("<a/>").attr("href","./index").html(titleValue));
     $(this).parent().parent().remove();
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:3000/board",
+      data: {name: newBoard.name, id: newBoard.id, user: newBoard.user},
+      success: function(response) {
+        addButton.before($("<a/>").attr("href","./index/" + response._id).html(titleValue));
+        menuAddButton.before($("<a/>").attr("href","./index" + response._id ).html(titleValue));
+        newBoard._id = response._id;
+        listOfBoards.push(newBoard);
 
+      },
+      dataType: "json"
+    });
   });
 
 });

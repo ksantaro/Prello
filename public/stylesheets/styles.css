@@ -415,8 +415,8 @@ font-size: 1.4rem;
   background-color: #4ca3c1;
 }
 
-#main-navbar div:nth-child(2) p{
-  padding-right: 2.2rem;
+#main-navbar div:nth-child(2) a, #main-navbar div:nth-child(2) p{
+  text-decoration: none;
   font-size: 2rem;
   font-weight: 600;
   color: #c9f4fb;
