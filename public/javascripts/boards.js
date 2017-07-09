@@ -3,8 +3,8 @@ var dropdownContent = $(".dropdown-content");
 var listBoards = $(".list-boards");
 var rowList = $('.row-list');
 var addButton = $(".list-boards button");
-var modal = $(".modal");
-var modalClose = $(".modal span");
+var modal = $(".modal-menu");
+var modalClose = $(".modal-menu span");
 var body = $("body");
 var menuAddButton = $(".dropdown-content a:last-child");
 var username;
@@ -18,7 +18,7 @@ $.get("http://localhost:3000/board", function(response) {
   }
   for (var num = 0; num < listOfBoards.length; num++) {
     addButton.before($("<a/>").attr("href","./index/" + response[num]._id).html(listOfBoards[num].name));
-    menuAddButton.before($("<a/>").attr("href","./index/" + + response[num]._id).html(listOfBoards[num].name));
+    menuAddButton.before($("<a/>").attr("href","./index/" + response[num]._id).html(listOfBoards[num].name));
   }
 });
 
@@ -40,7 +40,7 @@ $(document).ready(function () {
   });
   //Open Modal Main Add Button
   addButton.click(function (e) {
-    var createModal = $("<div/>").addClass("modal").append($("<div/>").addClass("add-new-board")
+    var createModal = $("<div/>").addClass("modal-menu").append($("<div/>").addClass("add-new-board")
       .append($("<h2/>").html("Title"))
       .append($("<span/>").html("X"))
       .append($("<input/>").attr("type","text").attr("placeholder","title of the new board"))
@@ -51,7 +51,7 @@ $(document).ready(function () {
   });
   //Open Modal Menu Add Button
   menuAddButton.click(function(e) {
-    var createModal = $("<div/>").addClass("modal").append($("<div/>").addClass("add-new-board")
+    var createModal = $("<div/>").addClass("modal-menu").append($("<div/>").addClass("add-new-board")
       .append($("<h2/>").html("Title"))
       .append($("<span/>").html("X"))
       .append($("<input/>").attr("type","text").attr("placeholder","title of the new board"))
@@ -60,17 +60,17 @@ $(document).ready(function () {
     dropdownContent.css("display", "none");
   });
   //Close Modal If clicked elsewhere
-  body.on("click",".modal", function(e) {
+  body.on("click",".modal-menu", function(e) {
     if ($(this).is(e.target) && $(this).has(e.target).length === 0) {
       $(this).remove();
       $("body").css("overflow", "auto");
   }});
   //Close Modal
-  body.on("click", ".modal span", function(e) {
+  body.on("click", ".modal-menu span", function(e) {
     $(this).parent().parent().remove();
   });
   //Create A board
-  body.on("click", ".modal button", function(e) {
+  body.on("click", ".modal-menu button", function(e) {
     var titleValue = $($(this).parent().find("input")).val();
     var newBoard = {
       name : titleValue, id : listOfBoards.length + "", user : username, lists : [],
@@ -82,7 +82,7 @@ $(document).ready(function () {
       data: {name: newBoard.name, id: newBoard.id, user: newBoard.user},
       success: function(response) {
         addButton.before($("<a/>").attr("href","./index/" + response._id).html(titleValue));
-        menuAddButton.before($("<a/>").attr("href","./index" + response._id ).html(titleValue));
+        menuAddButton.before($("<a/>").attr("href","./index/" + response._id ).html(titleValue));
         newBoard._id = response._id;
         listOfBoards.push(newBoard);
 

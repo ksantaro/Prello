@@ -1,15 +1,29 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
+var memberSchema = new Schema({
+  member: String,
+});
+
+var labelSchema = new Schema({
+  label: String,
+});
+
+var commentSchema = new Schema({
+  comment: String,
+  user: String,
+  date: String,
+});
+
 var cardSchema = new Schema({
   name: String,
   id: String,
   description: String,
-  "labels[]": { type: Array},
-  members: { type: Array},
-  comments: { type: Array},
-  dates : { type: Array},
-  users : { type: Array},
+  labels: [labelSchema],
+  members: [memberSchema],
+  comments: [commentSchema],
+  //dates : { type: Array},
+  //users : { type: Array},
 })
 
 var listSchema = new Schema({

@@ -115,11 +115,11 @@ overflow: auto;
 }
 
 #white-board h1, #white-board .list-boards, #white-board button {
-  margin-left: .3rem;
+  margin-left: .7rem;
 }
 
 #white-board h1 {
-
+  margin-bottom: 0;
 }
 
 #white-board .list-boards a {
@@ -580,7 +580,7 @@ font-size: 1.4rem;
 
 }
 
-.modal {
+.modal, .modal-menu {
     /*display: none;*/ /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 2; /* Sit on top */

@@ -94,17 +94,40 @@ router.post("/:id/list/", function(req,res) {
 });
 router.patch("/:id/list/:id2", function(req,res) {
     console.log(req.body);
-    Board.update(
+    /*Board.update(
       {'lists._id' : mongoose.Types.ObjectId(req.params.id2)},
       {$set: {"lists.$" : req.body}},
       {upsert: true}
     ).then(function(err, updatedList) {
       res.end();
+    });*/
+    Board.findOne({_id: req.params.id}, function(err, board) {
+      var list = board.lists.id(req.params.id2);
+      list.title = req.body.title;
+      list.id = req.body.id;
+      board.save(function(err, board) {
+        if (err) {
+          console.log(err);
+        } else {
+          res.json(board);
+        }
+      });
     });
 });
 
 router.delete("/:id/list/:id2", function(req,res) {
-    Board.update(
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var list = board.lists.id(req.params.id2);
+    list.remove();
+    board.save(function(err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+    /*Board.update(
       {_id : req.params.id},
       {$pull: {lists: { _id: req.params.id2}}},
       {upsert: false},
@@ -113,6 +136,7 @@ router.delete("/:id/list/:id2", function(req,res) {
         console.log(updatedBoard);
         res.json(updatedBoard);
       });
+    */
 });
 
 router.post("/:id/list/:id2/card", function(req,res) {
@@ -121,32 +145,27 @@ router.post("/:id/list/:id2/card", function(req,res) {
       name: '',
       id: '',
       description: '',
-      "labels[]": [],
+      labels: [],
       members: [],
       comments : [],
-      dates : [],
-      users : [],
   };
   Board.update(
     {'lists._id' : mongoose.Types.ObjectId(req.params.id2)},
     {$push: {"lists.$.cards" : newCard}},
     {upsert: true}
   ).then(function(err, updatedList) {
-    res.end();
+    res.json(updatedList);
   });
 });
 //BoardID ListID CardID
 router.patch("/:id/list/:id2/card/:id3", function(req,res) {
+  console.log(req.body);
+  console.log("UP HERE");
   Board.findOne({_id: req.params.id}, function(err, board) {
     var card = board.lists.id(req.params.id2).cards.id(req.params.id3);
     card.name = req.body.name;
     card.id = req.body.id;
     card.description = req.body.description;
-    card.labels = req.body.labels;
-    card.members = req.body.members;
-    card.comments = req.body.comments;
-    card.dates = req.body.dates;
-    card.users = req.body.users;
     board.save(function(err, board) {
       if (err) {
         console.log(err);
@@ -171,5 +190,99 @@ router.delete("/:id/list/:id2/card/:id3", function(req,res) {
   });
 });
 
+router.post("/:id/list/:id2/card/:id3/label", function(req,res) {
+  var newLabels = {
+    label : req.body.label,
+  }
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var card = board.lists.id(req.params.id2).cards.id(req.params.id3);
+    card.labels.push(newLabels);
+    board.save(function (err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+});
+
+router.delete("/:id/list/:id2/card/:id3/label/:id4", function(req,res) {
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var label = board.lists.id(req.params.id2).cards.id(req.params.id3).labels.id(req.params.id4);
+    label.remove();
+    board.save(function(err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+});
+
+router.post("/:id/list/:id2/card/:id3/member", function(req,res) {
+  var newMember = {
+    member : req.body.member,
+  }
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var card = board.lists.id(req.params.id2).cards.id(req.params.id3);
+    card.members.push(newMember);
+    board.save(function (err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+});
+
+router.delete("/:id/list/:id2/card/:id3/member/:id4", function(req,res) {
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var member = board.lists.id(req.params.id2).cards.id(req.params.id3).members.id(req.params.id4);
+    member.remove();
+    board.save(function(err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+});
+
+router.post("/:id/list/:id2/card/:id3/comment", function(req,res) {
+  var newComment = {
+    comment : req.body.comment,
+    user : req.body.user,
+    date : req.body.date,
+  }
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var card = board.lists.id(req.params.id2).cards.id(req.params.id3);
+    card.comments.unshift(newComment);
+    board.save(function (err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+});
+
+router.delete("/:id/list/:id2/card/:id3/comment/:id4", function(req,res) {
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var comment = board.lists.id(req.params.id2).cards.id(req.params.id3).comments.id(req.params.id4);
+    comment.remove();
+    board.save(function(err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+});
 
 module.exports = router;

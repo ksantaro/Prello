@@ -11,6 +11,21 @@ var User = require('../models/user.js');
 
 /* GET home page. */
 router.get('/index/:id', function(req, res, next) {
+  if (req.session && req.session.user) {
+    console.log("session is made");
+    User.findOne({ email: req.session.user.email}, function (err,user) {
+      if (!user) {
+        req.session.reset();
+        req.redirect('/login');
+      } else {
+        //res.locals.user = user;
+        console.log("INDEX");
+        res.render('index.ejs', {url : req.params.id});
+      }
+    });
+  } else {
+    res.redirect('/login');
+  }
   res.render('index.ejs', {url : req.params.id});
 });
 
