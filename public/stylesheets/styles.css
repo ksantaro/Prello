@@ -219,12 +219,17 @@ overflow: auto;
   margin-left: .55rem;
   margin-bottom: .75rem;
   margin-top: 0.125rem;
-  width: 100%;
+  /*width: 100%;*/
   margin-right: 0;
   display: inline-block;
+  cursor: pointer;
 }
 
-
+#h1-white:focus {
+    background-color: #dcdcdc;
+    color: black;
+    outline-color: #a6a6a6;
+}
 
 
 

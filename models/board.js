@@ -1,5 +1,11 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+//var cardSchema = require('../models/user.js');
+
+var userSchema = new Schema({
+  name = String,
+  email = String,
+});
 
 var memberSchema = new Schema({
   member: String,
@@ -37,6 +43,7 @@ var boardSchema = new Schema({
   id: String,
   lists: [listSchema],
   user: String,
+  users: [userSchema]
 });
 
 module.exports = mongoose.model("boards", boardSchema);

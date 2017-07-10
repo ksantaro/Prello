@@ -11,20 +11,26 @@ var username;
 
 var listOfBoards = [];
 
-$.get("http://localhost:3000/board", function(response) {
-  console.log(response);
-  for (var num = 0; num < response.length; num++) {
-    listOfBoards.push(response[num]);
-  }
-  for (var num = 0; num < listOfBoards.length; num++) {
-    addButton.before($("<a/>").attr("href","./index/" + response[num]._id).html(listOfBoards[num].name));
-    menuAddButton.before($("<a/>").attr("href","./index/" + response[num]._id).html(listOfBoards[num].name));
-  }
-});
-
 $.get("http://localhost:3000/username",function(response) {
   username = response;
 });
+
+$.get("http://localhost:3000/board", function(response) {
+  console.log(response);
+  for (var num = 0; num < response.length; num++) {
+    if (response[num].user === username) {
+      listOfBoards.push(response[num]);
+      console.log(response[num]);
+      console.log(response[num]._id);
+    }
+  }
+  for (var num = 0; num < listOfBoards.length; num++) {
+    addButton.before($("<a/>").attr("href","./index/" + listOfBoards[num]._id).html(listOfBoards[num].name));
+    menuAddButton.before($("<a/>").attr("href","./index/" + listOfBoards[num]._id).html(listOfBoards[num].name));
+  }
+});
+
+
 
 $(document).ready(function () {
 

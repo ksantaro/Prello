@@ -1,6 +1,9 @@
 //function ListOfCards(title, listOfCards, addButton, parent);
 var username = "Kenny";
 var curDate;
+var boardName;
+var boardID;
+var originUser;
 function formatCurDate(date) {
   var hours = date.getHours();
   var minutes = date.getMinutes();
@@ -23,21 +26,30 @@ var listOfBoards = [];
 var menuAddButton = $(".dropdown-content a:last-child");
 console.log(url);
 
-$.get("http://localhost:3000/board", function(response) {
-  for (var num = 0; num < response.length; num++) {
-    listOfBoards.push(response[num]);
-  }
-  for (var num = 0; num < listOfBoards.length; num++) {
-    menuAddButton.before($("<a/>").attr("href","./" + response[num]._id).html(listOfBoards[num].name));
-  }
-});
+
 
 $.get("http://localhost:3000/board/" + url, function (json) {
     console.log(json);
-    var boardName = json.name;
+    boardName = json.name;
     ajaxLOLInfo = json.lists;
+    boardID = json.id;
+    originUser = json.user;
     var listOfListsInfo = ajaxLOLInfo;
     $("h1#h1-white").html(boardName);
+    $("title").html(boardName);
+    $.get("http://localhost:3000/board", function(response) {
+      for (var num = 0; num < response.length; num++) {
+        if (response[num].user === originUser) {
+          listOfBoards.push(response[num]);
+        }
+      }
+      for (var num = 0; num < listOfBoards.length; num++) {
+        if (listOfBoards[num].name === boardName) {
+          var boardID = num;
+        }
+        menuAddButton.before($("<a/>").attr("id", num + "").attr("href","./" + listOfBoards[num]._id).html(listOfBoards[num].name));
+      }
+    });
     //PopulateUsinglistOflistsInfo
     for(var num = 0; num <  listOfListsInfo.length; num++) {
       populateLists.push(listOfListsInfo[num]);
@@ -196,6 +208,7 @@ $(document).ready(function () {
   var addNewList = $("#add-new-list");
   var modal = $(".modal");
   var fullview = $(".card-fullview");
+  var boardTitle = $("h1#h1-white");
   "JUST TARGET FULLVIEW, THEN $THIS.attr(id) WOULD KNOW WHICH CARD IT CAME FROM ---> IF YOU GIVE IT THE ID"
   "TARGET FULLVIEW -> (BOARD FULLVIEW (TO DELEGATE))"
   "FULLVIEW LISTENER NAME OF CARD "
@@ -247,11 +260,27 @@ $(document).ready(function () {
       url: "http://localhost:3000/board",
       data: {name: newBoard.name, id: newBoard.id, user: newBoard.user},
       success: function(response) {
-        menuAddButton.before($("<a/>").attr("href","./index/" + response._id ).html(titleValue));
+        menuAddButton.before($("<a/>").attr("id", listOfBoards.length+ "").attr("href","./" + response._id ).html(titleValue));
         newBoard._id = response._id;
         listOfBoards.push(newBoard);
 
       },
+      dataType: "json"
+    });
+  });
+  //Save New Board Title
+  boardTitle.on("keyup ", function (e) {
+    var newTitleValue = $(this).html();
+    boardName = newTitleValue;
+    $(".dropdown-content a:nth-child(" + (parseInt(boardID) + 1) + ")").html(newTitleValue);
+    $.ajax({
+      url: "http://localhost:3000/board/"+ url,
+      data: {
+        name: boardName,
+        id: boardID,
+        user: originUser,
+      },
+      type: "PATCH",
       dataType: "json"
     });
   });
