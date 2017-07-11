@@ -55,6 +55,14 @@ router.get("/test", function(req, res) {
 router.get("/username", function(req, res, next) {
   res.json(req.session.user.username);
 });
+
+router.get("/email", function(req,res,next) {
+  res.json(req.session.user.email);
+});
+
+router.get("/uniqueID", function(req,res,next) {
+  res.json(req.session.user._id);
+});
 /*
 router.get('/:id', function(req, res) {
   res.render('index', {uID : req.params.id});

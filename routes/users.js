@@ -3,6 +3,17 @@ var router = express.Router();
 var User = require('../models/user.js');
 
 /* GET users listing. */
+router.get("/user/:email", function(req, res, next) {
+  console.log("working");
+  User.findOne({email: req.params.email}, function(err, user) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(user);
+    }
+  });
+});
+
 router.get('/login', function(req, res, next) {
   User.find(function (err, list) {
     if (err) console.log(err);
@@ -17,12 +28,13 @@ router.post("/login", function(req, res) {
     password: req.body.password,
   });
   user.save(user, function (err, newUser) {
+    console.log("WHY IS IT SAVING");
     if (err) {
       var error = "Try again!";
       if (err.code === 11000) {
         var error = "Email is taken please try a new one";
       }
-      res.redirect("../login");
+      res.redirect("../login");//, {emailError: error});
     } else {
       res.redirect("../boards");
     }

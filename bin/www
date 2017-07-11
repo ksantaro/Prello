@@ -8,6 +8,8 @@ var app = require('../app');
 var debug = require('debug')('prello:server');
 var http = require('http');
 
+
+
 /**
  * Get port from environment and store in Express.
  */
@@ -20,6 +22,11 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+//require("../socketio").setup(server);
+/*"on. new card, function(data) {
+  new card creadete, data.card
+}"*/
+
 
 /**
  * Listen on provided port, on all network interfaces.

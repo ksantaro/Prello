@@ -13,7 +13,7 @@ var board = require("./routes/board")
 var User = require('./models/user.js');
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/prello'); // Port Num can be specified
+mongoose.connect('mongodb://localhost/prello'); // Port Num can be specified SOMETHING HERE
 var db = mongoose.connection;
 /*
 function(req, res, next) {

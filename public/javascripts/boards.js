@@ -1,6 +1,7 @@
 var boardBtn = $("#boards-btn");
 var dropdownContent = $(".dropdown-content");
 var listBoards = $(".list-boards");
+var sharedBoards = $(".shared-boards");
 var rowList = $('.row-list');
 var addButton = $(".list-boards button");
 var modal = $(".modal-menu");
@@ -8,25 +9,45 @@ var modalClose = $(".modal-menu span");
 var body = $("body");
 var menuAddButton = $(".dropdown-content a:last-child");
 var username;
+var listOfSharedBoards = [];
 
 var listOfBoards = [];
+var userID;
 
 $.get("http://localhost:3000/username",function(response) {
   username = response;
 });
 
+
+
+$.get("http://localhost:3000/uniqueID", function(response) {
+  userID = response;
+});
+
+
+
 $.get("http://localhost:3000/board", function(response) {
   console.log(response);
   for (var num = 0; num < response.length; num++) {
-    if (response[num].user === username) {
+    console.log(response[num].userID);
+    console.log(userID);
+    if (response[num].userID === userID) {
       listOfBoards.push(response[num]);
       console.log(response[num]);
       console.log(response[num]._id);
     }
+    for (var num2 = 0; num2 < response[num].userList.length; num2++) {
+      if (response[num].userList[num2].user === userID) {
+        listOfSharedBoards.push(response[num]);
+      }
+    }
   }
   for (var num = 0; num < listOfBoards.length; num++) {
-    addButton.before($("<a/>").attr("href","./index/" + listOfBoards[num]._id).html(listOfBoards[num].name));
-    menuAddButton.before($("<a/>").attr("href","./index/" + listOfBoards[num]._id).html(listOfBoards[num].name));
+    addButton.before($("<a/>").attr("id", num + "").attr("href","./index/" + listOfBoards[num]._id).html(listOfBoards[num].name));
+    menuAddButton.before($("<a/>").attr("id", num + "").attr("href","./index/" + listOfBoards[num]._id).html(listOfBoards[num].name));
+  }
+  for (var num = 0; num < listOfSharedBoards.length; num++) {
+    sharedBoards.append($("<a/>").attr("href","./index/" + listOfSharedBoards[num]._id).html(listOfSharedBoards[num].name));
   }
 });
 
@@ -79,22 +100,25 @@ $(document).ready(function () {
   body.on("click", ".modal-menu button", function(e) {
     var titleValue = $($(this).parent().find("input")).val();
     var newBoard = {
-      name : titleValue, id : listOfBoards.length + "", user : username, lists : [],
+      name : titleValue, id : listOfBoards.length + "", lists : [], userList : [], userID: userID
     };
+    console.log(newBoard);
     $(this).parent().parent().remove();
     $.ajax({
       type: "POST",
       url: "http://localhost:3000/board",
-      data: {name: newBoard.name, id: newBoard.id, user: newBoard.user},
+      data: {name: newBoard.name, id: newBoard.id, userID: newBoard.userID},
       success: function(response) {
-        addButton.before($("<a/>").attr("href","./index/" + response._id).html(titleValue));
-        menuAddButton.before($("<a/>").attr("href","./index/" + response._id ).html(titleValue));
+        addButton.before($("<a/>").attr("id", listOfBoards.length + "").attr("href","./index/" + response._id).html(titleValue));
+        menuAddButton.before($("<a/>").attr("id", listOfBoards.length + "").attr("href","./index/" + response._id ).html(titleValue));
         newBoard._id = response._id;
         listOfBoards.push(newBoard);
-
+        var url = response._id;
+        console.log(url);
       },
       dataType: "json"
     });
+
   });
 
 });

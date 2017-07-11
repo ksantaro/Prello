@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 var express = require('express');
 var router = express.Router();
 var Board = require('../models/board.js');
-
+var User = require('../models/user.js');
+//var io = require("../socket.io")
 router.get("/", function(req, res) {
   Board.find(function (err, board) {
     if (err) console.log(err);
@@ -24,14 +25,17 @@ router.post('/', function(req,res) {
   var newBoard = new Board(
     { name: req.body.name,
       id: req.body.id,
-      user: req.body.user,
+      userID: req.body.userID, //Unique ID
+      userList: [],
       lists: [],
     }
   );
+  console.log(newBoard);
   newBoard.save(function (err, list) {
     if (err) {
       console.log(err);
     } else {
+
       console.log("Meow");
       res.json(list);
     }
@@ -67,6 +71,68 @@ router.patch("/:id", function(req,res) {
    }});
 });
 
+router.get("/:id/user/", function(req,res) {
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(board.userList);
+    }
+  })
+});
+
+router.post("/:id/user/:email", function(req, res) {
+  User.findOne({email: req.params.email}, function(err, user) {
+    if(err) {
+      console.log(err);
+      res.json("user does not exsist");
+    } else {
+      Board.findOne({_id: req.params.id}, function(err, board) {
+        console.log("EMAIL INFO");
+        console.log(user.email);
+        console.log(board.email);
+        var containsUser = false;
+        for (var num = 0; num < board.userList.length; num++) {
+          if (board.userList[num].email === user.email) {
+            containsUser = true
+          }
+        }
+        if (user.email !== board.email && !(containsUser)) {
+          console.log("YHESSS");
+          var newUser =
+            {
+              name: user.username,
+              email: user.email,
+            };
+            Board.findByIdAndUpdate(req.params.id,
+              {$push: {userList: newUser}},
+              {upsert: true}, function(err, user) {
+              if (err) console.log(err);
+              else res.json(newUser);
+            });
+        } else {
+          res.json("user already in group");
+        }
+      });
+    }
+  });
+
+});
+
+router.delete("/:id/user/:id2", function(req, res) {
+  Board.findOne({_id: req.params.id}, function(err, board) {
+    var user = board.userList.id(req.params.id2);
+    user.remove();
+    board.save(function(err, board) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.json(board);
+      }
+    });
+  });
+});
+
 router.get("/:id/list/", function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     if (err) {
@@ -88,8 +154,11 @@ router.post("/:id/list/", function(req,res) {
   Board.findByIdAndUpdate(req.params.id, {
     $push: {lists: newList}
   }, {upsert: true}, function(err, list) {
-    if (err) console.log(err);
-    else res.json(list);
+    if (err) {console.log(err);}
+    else {
+      res.json(list);
+      //boradcastIoemit new card, for everyone emit new list io.getInstance().emit
+    }
   });
 });
 router.patch("/:id/list/:id2", function(req,res) {
@@ -127,16 +196,6 @@ router.delete("/:id/list/:id2", function(req,res) {
       }
     });
   });
-    /*Board.update(
-      {_id : req.params.id},
-      {$pull: {lists: { _id: req.params.id2}}},
-      {upsert: false},
-      function(err, updatedBoard) {
-        console.log(err);
-        console.log(updatedBoard);
-        res.json(updatedBoard);
-      });
-    */
 });
 
 router.post("/:id/list/:id2/card", function(req,res) {

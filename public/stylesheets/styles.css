@@ -114,7 +114,7 @@ overflow: auto;
   margin-top: 3.3rem;
 }
 
-#white-board h1, #white-board .list-boards, #white-board button {
+#white-board h1, #white-board .list-boards, .shared-boards, #white-board button {
   margin-left: .7rem;
 }
 
@@ -122,12 +122,12 @@ overflow: auto;
   margin-bottom: 0;
 }
 
-#white-board .list-boards a {
+#white-board .list-boards a, #white-board .shared-boards a {
   text-decoration: none;
   color: white;
 }
 
-#white-board .list-boards p, #white-board .list-boards button, #white-board .list-boards a {
+#white-board .list-boards p, #white-board .list-boards button, #white-board .list-boards a, #white-board .shared-boards a {
   padding-right: 3rem;
     background-color: #0067a2;
     color: white;
@@ -142,7 +142,12 @@ overflow: auto;
     min-width: 180px;
 }
 
-.add-new-board {
+
+.shared {
+  margin-top: 0;
+}
+
+.add-new-board, .add-new-user {
   max-width: 450px;
   margin-left: auto;
   margin-right: auto;
@@ -150,20 +155,20 @@ overflow: auto;
   padding-left: 12px;
 }
 
-.add-new-board h2 {
+.add-new-board h2, .add-new-user h2 {
   width: 92%;
   display: inline-block;
   margin: 10px 0;
 }
 
-.add-new-board span {
+.add-new-board span, .add-new-user span {
   font-family: monospace;
     font-size: 20px;
     color: gray;
   cursor: pointer;
 }
 
-.add-new-board input {
+.add-new-board input, .add-new-user input {
   width: 95%;
   font-size: 20px;
   display: block;
@@ -171,7 +176,7 @@ overflow: auto;
 
 }
 
-.add-new-board button {
+.add-new-board button, .add-new-user button {
   margin-bottom: 15px;
     padding: 6px 16px;
     color: white;
@@ -182,7 +187,7 @@ overflow: auto;
 }
 
 
-#white-board .list-boards p:hover {
+#white-board .list-boards p:hover, #white-board .shared-boards p:hover {
   background-color: #004871;
 }
 
@@ -310,13 +315,14 @@ font-size: 1.4rem;
   margin-top: 18px;
   padding: .2rem .6rem;
   margin-right: .3rem;
-  border: solid 1px transparent;
   cursor: pointer;
 }
 
 .options p:hover {
+/*
   background-color: #0369a5;
   border: solid 1px #0578bb;
+  */
 }
 
 
@@ -341,6 +347,17 @@ font-size: 1.4rem;
   padding: .25rem;
 }
 
+#add-new-user {
+
+}
+
+#add-new-user span {
+
+}
+
+#add-new-user input {
+
+}
 
 .options-dropdown {
   position: relative;
@@ -351,7 +368,7 @@ font-size: 1.4rem;
   display: block;
 } */
 
-.options-content p, .options-content a, .menu-title {
+.options-content p, .options-content a, #add-new-user, .menu-title {
   text-align: left;
   margin: 0;
 }
@@ -585,7 +602,7 @@ font-size: 1.4rem;
 
 }
 
-.modal, .modal-menu {
+.modal, .modal-menu, .modal-add-user {
     /*display: none;*/ /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 2; /* Sit on top */

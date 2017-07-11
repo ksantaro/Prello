@@ -3,8 +3,9 @@ var Schema = mongoose.Schema;
 //var cardSchema = require('../models/user.js');
 
 var userSchema = new Schema({
-  name = String,
-  email = String,
+  name : String,
+  email : {type: String},
+  id: String,
 });
 
 var memberSchema = new Schema({
@@ -42,8 +43,8 @@ var boardSchema = new Schema({
   name: String,
   id: String,
   lists: [listSchema],
-  user: String,
-  users: [userSchema]
+  userID: String,
+  userList: [userSchema]
 });
 
 module.exports = mongoose.model("boards", boardSchema);

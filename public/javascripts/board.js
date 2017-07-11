@@ -1,9 +1,12 @@
 //function ListOfCards(title, listOfCards, addButton, parent);
-var username = "Kenny";
+var username;
+var userEmail;
 var curDate;
 var boardName;
 var boardID;
 var originUser;
+var originEmail;
+var boardUsers;
 function formatCurDate(date) {
   var hours = date.getHours();
   var minutes = date.getMinutes();
@@ -24,8 +27,8 @@ var listOfListsInfo;
 var populateLists = [];
 var listOfBoards = [];
 var menuAddButton = $(".dropdown-content a:last-child");
+var userAddButton = $(".options-dropdown #add-new-user");
 console.log(url);
-
 
 
 $.get("http://localhost:3000/board/" + url, function (json) {
@@ -34,12 +37,14 @@ $.get("http://localhost:3000/board/" + url, function (json) {
     ajaxLOLInfo = json.lists;
     boardID = json.id;
     originUser = json.user;
+    originEmail = json.userEmail;
+    boardUsers = json.users;
     var listOfListsInfo = ajaxLOLInfo;
     $("h1#h1-white").html(boardName);
     $("title").html(boardName);
     $.get("http://localhost:3000/board", function(response) {
       for (var num = 0; num < response.length; num++) {
-        if (response[num].user === originUser) {
+        if (response[num].userEmail === originEmail) {
           listOfBoards.push(response[num]);
         }
       }
@@ -193,6 +198,11 @@ $(document).ready(function () {
   $.get("http://localhost:3000/username",function(response) {
     username = response;
   });
+  $.get("http://localhost:3000/email",function(response) {
+    userEmail = response;
+  });
+
+
   //Selectors
   var body = $("body");
   var listOfLists = board.find(".list-cards"); //last one is a button'
@@ -237,6 +247,7 @@ $(document).ready(function () {
       .append($("<button/>").attr("type","button").html("Create")));
     body.append(createModal);
     dropdownContent.css("display", "none");
+    optionsContent.css("display", "none");
   });
   //Close Modal If clicked elsewhere
   body.on("click",".modal-menu", function(e) {
@@ -252,13 +263,13 @@ $(document).ready(function () {
   body.on("click", ".modal-menu button", function(e) {
     var titleValue = $($(this).parent().find("input")).val();
     var newBoard = {
-      name : titleValue, id : listOfBoards.length + "", user : username, lists : [],
+      name : titleValue, id : listOfBoards.length + "", user : username, lists : [], userEmail: userEmail,
     };
     $(this).parent().parent().remove();
     $.ajax({
       type: "POST",
       url: "http://localhost:3000/board",
-      data: {name: newBoard.name, id: newBoard.id, user: newBoard.user},
+      data: {name: newBoard.name, id: newBoard.id, user: newBoard.user, userEmail: newBoard.email},
       success: function(response) {
         menuAddButton.before($("<a/>").attr("id", listOfBoards.length+ "").attr("href","./" + response._id ).html(titleValue));
         newBoard._id = response._id;
@@ -282,6 +293,53 @@ $(document).ready(function () {
       },
       type: "PATCH",
       dataType: "json"
+    });
+  });
+  //Open Modal Add User Add Button
+  userAddButton.click(function(e) {
+    var createModal = $("<div/>").addClass("modal-add-user").append($("<div/>").addClass("add-new-user")
+      .append($("<h2/>").html("User Email"))
+      .append($("<span/>").html("X"))
+      .append($("<input/>").attr("type","text").attr("placeholder","e.g. jdoe@gmail.com"))
+      .append($("<button/>").attr("type","button").html("Add")));
+    body.append(createModal);
+    dropdownContent.css("display", "none");
+    optionsContent.css("display", "none");
+    //option display none
+  });
+  //Close Modal If clicked elsewhere
+  body.on("click",".modal-add-user", function(e) {
+    if ($(this).is(e.target) && $(this).has(e.target).length === 0) {
+      $(this).remove();
+      $("body").css("overflow", "auto");
+  }});
+  //Close Modal
+  body.on("click", ".modal-add-user span", function(e) {
+    $(this).parent().parent().remove();
+  });
+  //Add the user
+  body.on("click", ".modal-add-user button", function(e) {
+    var emailValue = $($(this).parent().find("input")).val();
+    $(this).parent().parent().remove();
+
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:3000/board/" + url + "/user/" + emailValue,
+      success: function(response) {
+        //addButton.before($("<a/>").attr("href","./index/" + response._id).html(titleValue));
+        //menuAddButton.before($("<a/>").attr("href","./index/" + response._id ).html(titleValue));
+        if (response === "user already in group") {
+          alert(response);
+        } else if (response === "user does not exsist") {
+          alert(response);
+        } else {
+          listOfBoards[parseInt(boardID)].users.push(response);
+        }
+      },
+      error: function(jqXHR,textStatus, errorThrown ) {
+
+      },
+      dataType: "json",
     });
   });
   //add a new list
@@ -595,7 +653,8 @@ $(document).ready(function () {
     fullview.append(title).append(members).append(description).append(labels).append(comments).append(addDelete);
     modal.append(fullview);
     body.append(modal);
-
+    dropdownContent.css("display", "none");
+    optionsContent.css("display", "none");
   });
   //Fullview Save Title
   body.on("keyup ", ".modal .card-fullview-title h2", function (e) {
