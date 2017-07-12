@@ -7,6 +7,8 @@ var boardID;
 var originUser;
 var originEmail;
 var boardUsers;
+var originUserID;
+var userID;
 function formatCurDate(date) {
   var hours = date.getHours();
   var minutes = date.getMinutes();
@@ -30,21 +32,23 @@ var menuAddButton = $(".dropdown-content a:last-child");
 var userAddButton = $(".options-dropdown #add-new-user");
 console.log(url);
 
+$.get("http://localhost:3000/uniqueID", function(response) {
+  userID = response;
+});
 
 $.get("http://localhost:3000/board/" + url, function (json) {
     console.log(json);
     boardName = json.name;
     ajaxLOLInfo = json.lists;
     boardID = json.id;
-    originUser = json.user;
-    originEmail = json.userEmail;
+    originUserID = json.userID;
     boardUsers = json.users;
     var listOfListsInfo = ajaxLOLInfo;
     $("h1#h1-white").html(boardName);
     $("title").html(boardName);
     $.get("http://localhost:3000/board", function(response) {
       for (var num = 0; num < response.length; num++) {
-        if (response[num].userEmail === originEmail) {
+        if (response[num].userID === userID) {
           listOfBoards.push(response[num]);
         }
       }
@@ -263,13 +267,13 @@ $(document).ready(function () {
   body.on("click", ".modal-menu button", function(e) {
     var titleValue = $($(this).parent().find("input")).val();
     var newBoard = {
-      name : titleValue, id : listOfBoards.length + "", user : username, lists : [], userEmail: userEmail,
+      name : titleValue, id : listOfBoards.length + "", lists : [], userList : [], userID: userID
     };
     $(this).parent().parent().remove();
     $.ajax({
       type: "POST",
       url: "http://localhost:3000/board",
-      data: {name: newBoard.name, id: newBoard.id, user: newBoard.user, userEmail: newBoard.email},
+      data: {name: newBoard.name, id: newBoard.id, userID: newBoard.userID},
       success: function(response) {
         menuAddButton.before($("<a/>").attr("id", listOfBoards.length+ "").attr("href","./" + response._id ).html(titleValue));
         newBoard._id = response._id;
@@ -333,7 +337,7 @@ $(document).ready(function () {
         } else if (response === "user does not exsist") {
           alert(response);
         } else {
-          listOfBoards[parseInt(boardID)].users.push(response);
+          listOfBoards[parseInt(boardID)].userList.push(response);
         }
       },
       error: function(jqXHR,textStatus, errorThrown ) {

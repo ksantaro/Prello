@@ -6,6 +6,7 @@ var User = require('../models/user.js');
 //var io = require("../socket.io")
 router.get("/", function(req, res) {
   Board.find(function (err, board) {
+    console.log(board);
     if (err) console.log(err);
     res.json(board);
   });
@@ -94,10 +95,13 @@ router.post("/:id/user/:email", function(req, res) {
         var containsUser = false;
         for (var num = 0; num < board.userList.length; num++) {
           if (board.userList[num].email === user.email) {
-            containsUser = true
+            containsUser = true;
           }
         }
-        if (user.email !== board.email && !(containsUser)) {
+        console.log("HEREREITEOWUTEWTUOEWUTOEWUTOEIW");
+        console.log(user._id + "");
+        console.log((board.userID));
+        if ((user._id + "" !== board.userID) && !(containsUser)) {
           console.log("YHESSS");
           var newUser =
             {

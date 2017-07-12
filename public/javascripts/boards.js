@@ -10,7 +10,7 @@ var body = $("body");
 var menuAddButton = $(".dropdown-content a:last-child");
 var username;
 var listOfSharedBoards = [];
-
+var userEmail;
 var listOfBoards = [];
 var userID;
 
@@ -18,7 +18,9 @@ $.get("http://localhost:3000/username",function(response) {
   username = response;
 });
 
-
+$.get("http://localhost:3000/email",function(response) {
+  userEmail = response;
+});
 
 $.get("http://localhost:3000/uniqueID", function(response) {
   userID = response;
@@ -37,7 +39,9 @@ $.get("http://localhost:3000/board", function(response) {
       console.log(response[num]._id);
     }
     for (var num2 = 0; num2 < response[num].userList.length; num2++) {
-      if (response[num].userList[num2].user === userID) {
+      console.log(response[num].userList[num2].email);
+      console.log(userEmail);
+      if (response[num].userList[num2].email === userEmail) {
         listOfSharedBoards.push(response[num]);
       }
     }
@@ -115,6 +119,9 @@ $(document).ready(function () {
         listOfBoards.push(newBoard);
         var url = response._id;
         console.log(url);
+      },
+      error: function(jqXHR,textStatus, errorThrown ) {
+        console.log(errorThrown);
       },
       dataType: "json"
     });
