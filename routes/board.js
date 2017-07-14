@@ -3,10 +3,9 @@ var express = require('express');
 var router = express.Router();
 var Board = require('../models/board.js');
 var User = require('../models/user.js');
-//var io = require("../socket.io")
+var io = require("../socketio");
 router.get("/", function(req, res) {
   Board.find(function (err, board) {
-    console.log(board);
     if (err) console.log(err);
     res.json(board);
   });
@@ -83,42 +82,62 @@ router.get("/:id/user/", function(req,res) {
 });
 
 router.post("/:id/user/:email", function(req, res) {
-  User.findOne({email: req.params.email}, function(err, user) {
-    if(err) {
-      console.log(err);
+  var userExsits = false;
+  User.find(function(err,users) {
+    console.log(users);
+    console.log(req.params.email);
+    console.log(users.length);
+    for (var num = 0; num < users.length; num++) {
+      console.log(users[num].email);
+      if (users[num].email === req.params.email) {
+        console.log("its true");
+        userExsits = true;
+      }
+    }
+    if (!userExsits) {
+      console.log("user does not exsist");
       res.json("user does not exsist");
-    } else {
-      Board.findOne({_id: req.params.id}, function(err, board) {
-        console.log("EMAIL INFO");
-        console.log(user.email);
-        console.log(board.email);
-        var containsUser = false;
-        for (var num = 0; num < board.userList.length; num++) {
-          if (board.userList[num].email === user.email) {
-            containsUser = true;
-          }
-        }
-        console.log("HEREREITEOWUTEWTUOEWUTOEWUTOEIW");
-        console.log(user._id + "");
-        console.log((board.userID));
-        if ((user._id + "" !== board.userID) && !(containsUser)) {
-          console.log("YHESSS");
-          var newUser =
-            {
-              name: user.username,
-              email: user.email,
-            };
-            Board.findByIdAndUpdate(req.params.id,
-              {$push: {userList: newUser}},
-              {upsert: true}, function(err, user) {
-              if (err) console.log(err);
-              else res.json(newUser);
-            });
+    }
+    if (userExsits) {
+      User.findOne({email: req.params.email}, function(err, user) {
+        if(err) {
+          console.log(err);
+          res.json("user does not exsist");
         } else {
-          res.json("user already in group");
+          Board.findOne({_id: req.params.id}, function(err, board) {
+            console.log("EMAIL INFO");
+            console.log(user.email);
+            console.log(board.email);
+            var containsUser = false;
+            for (var num = 0; num < board.userList.length; num++) {
+              if (board.userList[num].email === user.email) {
+                containsUser = true;
+              }
+            }
+            console.log("HEREREITEOWUTEWTUOEWUTOEWUTOEIW");
+            console.log(user._id + "");
+            console.log((board.userID));
+            if ((user._id + "" !== board.userID) && !(containsUser)) {
+              console.log("YHESSS");
+              var newUser =
+                {
+                  name: user.username,
+                  email: user.email,
+                };
+                Board.findByIdAndUpdate(req.params.id,
+                  {$push: {userList: newUser}},
+                  {upsert: true}, function(err, user) {
+                  if (err) console.log(err);
+                  else res.json(newUser);
+                });
+            } else {
+              res.json("user already in group");
+            }
+          });
         }
       });
     }
+
   });
 
 });
@@ -160,6 +179,10 @@ router.post("/:id/list/", function(req,res) {
   }, {upsert: true}, function(err, list) {
     if (err) {console.log(err);}
     else {
+      //io.getInstance().emit();
+      console.log("11111111111111111111");
+      io.getInstance().emit("newList", newList);
+      console.log("22222222222222222222");
       res.json(list);
       //boradcastIoemit new card, for everyone emit new list io.getInstance().emit
     }

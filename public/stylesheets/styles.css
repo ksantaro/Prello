@@ -52,9 +52,15 @@ button {
   cursor: pointer;
 }
 
-div.row-list {
+#shared-boards-menu, #boards-menu {
+  background-color: #292929 !important;
+    color: white !important;
+}
+
+div.row-list, div.shared-boards {
   display: inline-block;
   white-space: normal;
+  margin-top: 13px;
 }
 
 #login-page {
@@ -125,21 +131,31 @@ overflow: auto;
 #white-board .list-boards a, #white-board .shared-boards a {
   text-decoration: none;
   color: white;
+  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
 }
 
 #white-board .list-boards p, #white-board .list-boards button, #white-board .list-boards a, #white-board .shared-boards a {
   padding-right: 3rem;
     background-color: #0067a2;
     color: white;
-    margin: 1rem 0;
+    margin: 13px 0;
     padding-bottom: 4rem;
     padding-top: .5rem;
     padding-left: 0.5rem;
     font-size: 1.1rem;
     font-weight: 600;
     display: inline-block;
-    margin-right: 6px;
-    min-width: 180px;
+    margin-right: 13px;
+    min-width: 200px;
+    margin-top: 0;
+
+}
+
+#white-board .list-boards button {
+  width: 255px;
 }
 
 
@@ -187,7 +203,8 @@ overflow: auto;
 }
 
 
-#white-board .list-boards p:hover, #white-board .shared-boards p:hover {
+#white-board .list-boards p:hover, #white-board .shared-boards p:hover,
+#white-board .list-boards a:hover, #white-board .shared-boards a:hover{
   background-color: #004871;
 }
 
@@ -198,6 +215,7 @@ overflow: auto;
     color: #5a5a5a;
     font-weight: normal;
   padding-right: 5.5rem;
+      display: list-item;
 }
 
 #white-board .list-boards button:hover {
@@ -214,7 +232,6 @@ overflow: auto;
 #blue-background header {
   position: fixed;
     top: 2.5rem;
-    width: 50%;
     right: 0;
 }
 
@@ -228,6 +245,9 @@ overflow: auto;
   margin-right: 0;
   display: inline-block;
   cursor: pointer;
+  max-width: 820px;
+    position: relative;
+    white-space: pre-wrap;
 }
 
 #h1-white:focus {
@@ -263,6 +283,13 @@ font-size: 1.4rem;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
   font-size: 1.2rem;
+  max-height: 578px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  overflow-y: auto;
+  border: 2px solid #8d8d8d;
+  border-top: none;
+  border-left: none;
 }
 
 
@@ -282,6 +309,11 @@ font-size: 1.4rem;
     font-size: 1.2rem !important;
     border-bottom: solid #b7b7b7 .09rem;
     min-width: 15.5rem !important;
+    max-width: 20rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 }
 
 .dropdown-content a:hover, .options-content p:hover{
@@ -290,6 +322,10 @@ font-size: 1.4rem;
 
 .dropdown a, .options a {
   text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background-color: #dadada !important;
 }
 
 /*
@@ -301,7 +337,7 @@ font-size: 1.4rem;
 .options {
   display: inline-block;
   text-align: right;
-  width: 100%;
+  float: right;
 }
 
 .options p, .options a, .menu-title {

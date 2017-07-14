@@ -7,7 +7,7 @@ var addButton = $(".list-boards button");
 var modal = $(".modal-menu");
 var modalClose = $(".modal-menu span");
 var body = $("body");
-var menuAddButton = $(".dropdown-content a:last-child");
+var menuAddButton = $(".dropdown-content #add-board-button");
 var username;
 var listOfSharedBoards = [];
 var userEmail;
@@ -52,6 +52,7 @@ $.get("http://localhost:3000/board", function(response) {
   }
   for (var num = 0; num < listOfSharedBoards.length; num++) {
     sharedBoards.append($("<a/>").attr("href","./index/" + listOfSharedBoards[num]._id).html(listOfSharedBoards[num].name));
+    $(".dropdown-content").append($("<a/>").attr("href","./index/" + listOfSharedBoards[num]._id).html(listOfSharedBoards[num].name))
   }
 });
 

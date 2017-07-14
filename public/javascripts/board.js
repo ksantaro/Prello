@@ -9,6 +9,7 @@ var originEmail;
 var boardUsers;
 var originUserID;
 var userID;
+
 function formatCurDate(date) {
   var hours = date.getHours();
   var minutes = date.getMinutes();
@@ -28,16 +29,20 @@ var ajaxLOLInfo;
 var listOfListsInfo;
 var populateLists = [];
 var listOfBoards = [];
-var menuAddButton = $(".dropdown-content a:last-child");
+var listOfSharedBoards = [];
+var menuAddButton = $(".dropdown-content #add-board-button");
 var userAddButton = $(".options-dropdown #add-new-user");
-console.log(url);
+var userEmail;
 
 $.get("http://localhost:3000/uniqueID", function(response) {
   userID = response;
 });
 
+$.get("http://localhost:3000/email",function(response) {
+  userEmail = response;
+});
+
 $.get("http://localhost:3000/board/" + url, function (json) {
-    console.log(json);
     boardName = json.name;
     ajaxLOLInfo = json.lists;
     boardID = json.id;
@@ -51,12 +56,24 @@ $.get("http://localhost:3000/board/" + url, function (json) {
         if (response[num].userID === userID) {
           listOfBoards.push(response[num]);
         }
+        for (var num2 = 0; num2 < response[num].userList.length; num2++) {
+          console.log(response[num].userList[num2].email);
+          console.log(userEmail);
+          if (response[num].userList[num2].email === userEmail) {
+            listOfSharedBoards.push(response[num]);
+          }
+        }
       }
+
       for (var num = 0; num < listOfBoards.length; num++) {
         if (listOfBoards[num].name === boardName) {
           var boardID = num;
         }
         menuAddButton.before($("<a/>").attr("id", num + "").attr("href","./" + listOfBoards[num]._id).html(listOfBoards[num].name));
+      }
+      for (var num = 0; num < listOfSharedBoards.length; num++) {
+        console.log(listOfSharedBoards[num]);
+        $(".dropdown-content").append($("<a/>").attr("href","./" + listOfSharedBoards[num]._id).html(listOfSharedBoards[num].name))
       }
     });
     //PopulateUsinglistOflistsInfo
@@ -150,7 +167,6 @@ $.ajax({
   //  alert( "Runs No matter what" );
   //});;
   */
-  console.log(ajaxLOLInfo);
 listOfListsInfo = populateLists;
 /*
 var listOfListsInfo = [
@@ -210,7 +226,6 @@ $(document).ready(function () {
   //Selectors
   var body = $("body");
   var listOfLists = board.find(".list-cards"); //last one is a button'
-  console.log(listOfLists);
   var modalClose = $(".close-modal");
   //board button
   var boardBtn = $("#boards-btn");
@@ -360,6 +375,8 @@ $(document).ready(function () {
         title: "Title",
         cards: [],
       }
+      //console.log(socket.emit("newList", newObjectList));
+      //io.getInstance().emit("newList", newObjectList);
       listOfListsInfo.push(newObjectList);
       var newList ="<div class=\"list-cards\" id=\""+ col +"\"><div class=\"list-cards-title\"><h3 contenteditable=\"true\">Title</h3><span class=\"remove-list-cards\">x</span></div><div class=\"cards\"></div><div id=\"card-object\" class=\"card add-card\"><button type=\"button\">Add a new card +</button></div></div>";
       col++;
@@ -368,9 +385,21 @@ $(document).ready(function () {
         url: "http://localhost:3000/board/" + url + "/list/" + uListID,
         data : newObjectList,
         type: "PATCH",
-        dataType: "json"
+        dataType: "json",
+        success: function(response) {
+          console.log(response);
+          socket.emit("newList", response.lists[response.lists.length - 1]);
+        }
       });
     });
+  });
+  socket.on("new list", function(post) {
+    console.log(post, "everyone");
+    listOfLists = board.find(".list-cards");
+    listOfListsInfo.push(post);
+    var newList ="<div class=\"list-cards\" id=\""+ col +"\"><div class=\"list-cards-title\"><h3 contenteditable=\"true\">Title</h3><span class=\"remove-list-cards\">x</span></div><div class=\"cards\"></div><div id=\"card-object\" class=\"card add-card\"><button type=\"button\">Add a new card +</button></div></div>";
+    col++;
+    board.append(newList);
   });
   //delete a list
   board.on("click", ".list-cards .remove-list-cards", function() {
@@ -390,6 +419,7 @@ $(document).ready(function () {
     }
     console.log("listOfListsInfo",listOfListsInfo);
     col--;
+    socket.emit("deleteList", listID);
     $.get("http://localhost:3000/board/" + url + "/list", function (response) {
       var uDListID = response[listID]._id;
       console.log(listID);
@@ -453,8 +483,27 @@ $(document).ready(function () {
       });
       var uListID;
       console.log(listOfListsInfo);
-
     });
+  });
+  socket.on("delete list", function(listID) {
+    console.log(listID);
+    console.log("div#" + listID + ".list-cards");
+    var listToDelete = $(".list-list .list-cards")[listID];
+    console.log(listToDelete);
+    listToDelete.remove();
+    var newBoard = $(".board");
+    var newLists = $(".list-list .list-cards");
+    listOfListsInfo.splice(listID, 1);
+    for(var num = 0; num < listOfListsInfo.length; num++) {
+        $(newLists[num]).attr("id", "" + num);
+        listOfListsInfo[num].id = num;
+      for(var num2 = 0; num2 < listOfListsInfo[num].cards.length; num2++) {
+        $($(newLists[num]).find(".cards .card")[num2]).attr("id", "" + num + num2 );
+        listOfListsInfo[num].cards[num2].id = "" + num + num2;
+      }
+    }
+    console.log("listOfListsInfo",listOfListsInfo);
+    col--;
   });
   //create a card
   board.on("click", ".list-cards button", function () {
@@ -471,9 +520,18 @@ $(document).ready(function () {
       var uCardID = response[listIndex].cards[cardIndex]._id;
       listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
       var cardInfo = newCardInfo;
-      console.log(cardInfo.labels);
       console.log(cardInfo);
-      console.log(JSON.stringify(cardInfo));
+
+      var cardToEmit = {
+        _id : uCardID,
+        description : cardInfo.description,
+        id : cardInfo.id,
+        name : cardInfo.name,
+        comments : cardInfo.comments,
+        members : cardInfo.members,
+        labels : cardInfo.lables,
+      }
+      socket.emit("newCard", {newCardInfo: cardToEmit, listIndex, cardIndex, labels : cardInfo.labels});
       $.ajax({
         url: "http://localhost:3000/board/" + url + "/list/" + uListID + "/card/" + uCardID,
         data: {
@@ -504,7 +562,7 @@ $(document).ready(function () {
     });
 
     var newCardInfo = { id: "" + listIndex + cardIndex, name: "Card Name", description: "Placeholder description",
-      labels: [{label: "example label"}], comments: [], dates: [], members: [], users: []};
+      labels: [{label: "example label"}], comments: [], members: []};
     listOfListsInfo[listIndex].cards.push(newCardInfo);
     map[newCardInfo.id] = { listIndex, cardIndex };
     //create in page
@@ -513,11 +571,28 @@ $(document).ready(function () {
     console.log($(this).parent().parent().find(".cards"));
     $(this).parent().parent().find(".cards").append(newCard);
   });
+  socket.on("new card", function(post) {
+    console.log(post);
+    var newCardInfo = post.newCardInfo;
+    newCardInfo.labels = post.labels;
+    var listIndex = post.listIndex;
+    var cardIndex = post.cardIndex;
+    listOfListsInfo[listIndex].cards.push(newCardInfo);
+    map[newCardInfo.id] = { listIndex, cardIndex };
+    //create in page
+    var newCard = $("<div/>").addClass("card").attr("id", newCardInfo.id);
+    newCard.append("<p>"+ newCardInfo.name +"</p><p>edit/info</p>");
+    console.log($(this).parent().parent().find(".cards"));
+    var listToAddCard = $($($(".list-list .list-cards")[listIndex]).find(".cards"));
+    listToAddCard.append(newCard);
+    $(this).parent().parent().find(".cards").append(newCard);
+  });
   //Delete a Card
   body.on("click", ".modal button.delete", function() {
     var cardToDelete = $(this).parent().parent().parent();
     var cardID = cardToDelete.attr("id");
     console.log(cardID);
+    socket.emit("deleteCard", cardID);
     cardToDelete.remove();
     console.log($(".board #" + cardID));
     $(".board #" + cardID).remove();
@@ -527,6 +602,7 @@ $(document).ready(function () {
     var cardIndex = map[cardID].cardIndex;
     var uListID = listOfListsInfo[listIndex]._id;
     var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
+
     $.ajax({
       url: "http://localhost:3000/board/" + url + "/list/" + uListID + "/card/" + uCardID,
       type: "DELETE",
@@ -554,6 +630,20 @@ $(document).ready(function () {
       });
     });
   });
+  socket.on("delete card", function(cardID) {
+    $(".board #" + cardID).remove();
+    var newBoard = $(".board");
+    var newLists = $(".list-list .list-cards");
+    var listIndex = map[cardID].listIndex;
+    var cardIndex = map[cardID].cardIndex;
+    listOfListsInfo[listIndex].cards.splice(cardIndex, 1);
+    for(var num = 0; num < listOfListsInfo[listIndex].cards.length; num++) {
+      //console.log($(newLists[num]));
+        $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
+        listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
+        console.log(listOfListsInfo[listIndex].cards[num].id);
+    }
+  });
   //list cards title set in data Structure
   board.on("keyup ", ".list-cards h3", function (e) {
     var parentId = $(this).parent().parent().attr("id");
@@ -566,6 +656,14 @@ $(document).ready(function () {
       type: "PATCH",
       dataType: "json"
     });
+    socket.emit("changeListTitle", {title: newTitleValue, parentId :parentId});
+  });
+  socket.on("change list title", function(titleInfo) {
+    var parentId = titleInfo.parentId;
+    var newTitleValue = titleInfo.title;
+    listOfListsInfo[parentId].title = newTitleValue;
+    console.log($($(".list-list .list-cards")[parentId]).find("h3").html(newTitleValue));
+    //$($(".list-list")[parentId]).html(newTitleValue);
   });
   //Show Board dropdown
   boardBtn.click(function () {
@@ -604,61 +702,73 @@ $(document).ready(function () {
     var cardIndex = map[cardID].cardIndex;
     var listIndex = map[cardID].listIndex;
     var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
-    var cardName = cardInfo.name;
-    var cardDescription = cardInfo.description;
-    var cardLabels = cardInfo.labels;
-    var cardComments = cardInfo.comments;
-    var cardMembers = cardInfo.members;
-    //Build fullview
-    var modal = $("<div/>").addClass("modal").attr("id", cardID);
-    var fullview = $("<div/>").addClass("card-fullview");
-    var title = $("<div/>").addClass("card-fullview-title")
-                .append($("<h2/>").attr("contenteditable", "true").html(cardName))
-                .append($("<span/>").addClass("close-modal").html("X"));
-    var members = $("<div/>").addClass("members").append($("<h3/>").html("Members"));
-          for (var num = 0; num < cardMembers.length; num++) {
-          members.append($("<p/>").attr("id", "" + num).addClass("member").html(cardMembers[num].member).append($("<span/>").html("x")));
+    var uListID = listOfListsInfo[listIndex]._id;
+    var uCardID = cardInfo._id;
+    $.ajax({
+      url : "http://localhost:3000/board/" + url,
+      type: "GET",
+      dataType: "json",
+      success: function(response) {
+        listOfListsInfo[listIndex].cards[cardIndex] = response.lists[listIndex].cards[cardIndex];
+        cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
+        var cardName = cardInfo.name;
+        var cardDescription = cardInfo.description;
+        var cardLabels = cardInfo.labels;
+        var cardComments = cardInfo.comments;
+        var cardMembers = cardInfo.members;
+        $($($("#" + cardID).find("p"))[0]).html(cardName);
+        //Build fullview
+        var modal = $("<div/>").addClass("modal").attr("id", cardID);
+        var fullview = $("<div/>").addClass("card-fullview");
+        var title = $("<div/>").addClass("card-fullview-title")
+                    .append($("<h2/>").attr("contenteditable", "true").html(cardName))
+                    .append($("<span/>").addClass("close-modal").html("X"));
+        var members = $("<div/>").addClass("members").append($("<h3/>").html("Members"));
+              for (var num = 0; num < cardMembers.length; num++) {
+              members.append($("<p/>").attr("id", "" + num).addClass("member").html(cardMembers[num].member).append($("<span/>").html("x")));
+              }
+              members.append($("<div/>").addClass("member-button")
+                        .append($("<button/>").attr("type","button").addClass("member").html("+"))
+                        .append($("<div/>").addClass("input-member-name")
+                          .append($("<form/>").attr("onsubmit","false").attr("id","member-form")
+                            .append($("<input/>").attr("type","text").attr("placeholder","type member's name")))));
+        var description = $("<div/>").addClass("description")
+                            .append($("<h3/>").html("Description"))
+                            .append($("<p/>").addClass("description-text").attr("contenteditable", "false").html(cardDescription))
+                            .append($("<p/>").addClass("edit").html("Edit"));
+        var labels = $("<div/>").addClass("labels").append($("<h3/>").html("Labels"));
+          for (var num = 0; num < cardLabels.length; num++) {
+            labels.append($("<p/>").attr("id", "" + num).addClass("label").html(cardLabels[num].label).append($("<span/>").html("x")));
           }
-          members.append($("<div/>").addClass("member-button")
-                    .append($("<button/>").attr("type","button").addClass("member").html("+"))
-                    .append($("<div/>").addClass("input-member-name")
-                      .append($("<form/>").attr("onsubmit","false").attr("id","member-form")
-                        .append($("<input/>").attr("type","text").attr("placeholder","type member's name")))));
-    var description = $("<div/>").addClass("description")
-                        .append($("<h3/>").html("Description"))
-                        .append($("<p/>").addClass("description-text").attr("contenteditable", "false").html(cardDescription))
-                        .append($("<p/>").addClass("edit").html("Edit"));
-    var labels = $("<div/>").addClass("labels").append($("<h3/>").html("Labels"));
-      for (var num = 0; num < cardLabels.length; num++) {
-        labels.append($("<p/>").attr("id", "" + num).addClass("label").html(cardLabels[num].label).append($("<span/>").html("x")));
-      }
-      labels.append($("<div/>").addClass("label-button")
-                .append($("<button/>").attr("type","button").addClass("label").html("+"))
-                .append($("<div/>").addClass("input-label-name")
-                  .append($("<form/>").attr("onsubmit","false")
-                    .append($("<input/>").attr("type","text").attr("placeholder","type label's name")))));
-    var comments = $("<div/>").addClass("comments")
-                    .append($("<h3/>").html("Add a comment"))
-                    .append($("<form/>").addClass("comment-form")
-                      .append($("<textarea/>").addClass("comment-box").attr("type","text").attr("placeholder","Write a comment..."))
-                      .append($("<br/>")).append($("<button/>").addClass("comment-button").attr("type","button").html("Send")).append("<br/>"))
-                    .append($("<div/>").addClass("comment-section"));
-    for(var num = 0; num < cardComments.length; num++) {
-      var commentInfo = cardComments[num];
-      comments.find(".comment-section").append(
-        $("<div/>").addClass("comment-line").attr("id","" + num)
-        .append($("<p/>").addClass("member").html(commentInfo.user))
-        .append($("<p/>").addClass("comment-text").html(commentInfo.comment))
-        .append($("<span/>").addClass("comment-date").html(commentInfo.date))
-        .append($("<span/>").addClass("comment-delete").html("Delete Comment"))
-      );
-    }
-    var addDelete = $("<div/>").addClass("add-delete").append($("<button/>").addClass("delete").attr("type","button").html("Delete"));
-    fullview.append(title).append(members).append(description).append(labels).append(comments).append(addDelete);
-    modal.append(fullview);
-    body.append(modal);
-    dropdownContent.css("display", "none");
-    optionsContent.css("display", "none");
+          labels.append($("<div/>").addClass("label-button")
+                    .append($("<button/>").attr("type","button").addClass("label").html("+"))
+                    .append($("<div/>").addClass("input-label-name")
+                      .append($("<form/>").attr("onsubmit","false")
+                        .append($("<input/>").attr("type","text").attr("placeholder","type label's name")))));
+        var comments = $("<div/>").addClass("comments")
+                        .append($("<h3/>").html("Add a comment"))
+                        .append($("<form/>").addClass("comment-form")
+                          .append($("<textarea/>").addClass("comment-box").attr("type","text").attr("placeholder","Write a comment..."))
+                          .append($("<br/>")).append($("<button/>").addClass("comment-button").attr("type","button").html("Send")).append("<br/>"))
+                        .append($("<div/>").addClass("comment-section"));
+        for(var num = 0; num < cardComments.length; num++) {
+          var commentInfo = cardComments[num];
+          comments.find(".comment-section").append(
+            $("<div/>").addClass("comment-line").attr("id","" + num)
+            .append($("<p/>").addClass("member").html(commentInfo.user))
+            .append($("<p/>").addClass("comment-text").html(commentInfo.comment))
+            .append($("<span/>").addClass("comment-date").html(commentInfo.date))
+            .append($("<span/>").addClass("comment-delete").html("Delete Comment"))
+          );
+        }
+        var addDelete = $("<div/>").addClass("add-delete").append($("<button/>").addClass("delete").attr("type","button").html("Delete"));
+        fullview.append(title).append(members).append(description).append(labels).append(comments).append(addDelete);
+        modal.append(fullview);
+        body.append(modal);
+        dropdownContent.css("display", "none");
+        optionsContent.css("display", "none");
+      },
+    });
   });
   //Fullview Save Title
   body.on("keyup ", ".modal .card-fullview-title h2", function (e) {
@@ -917,5 +1027,8 @@ $(document).ready(function () {
       dataType: "json"
     });
   });
-
 });
+
+socket.on('newList', function(msg){
+      $('#messages').append($('<li>').text(msg));
+    });
