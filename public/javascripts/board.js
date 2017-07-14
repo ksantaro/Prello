@@ -779,13 +779,9 @@ $(document).ready(function () {
     var newTitleValue = $(this).html();
     var uListID = listOfListsInfo[listIndex]._id;
     var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
-    console.log(newTitleValue);
-    console.log(cardID);
     listOfListsInfo[listIndex].cards[cardIndex].name = newTitleValue;
     $($($("#" + cardID).find("p"))[0]).html(newTitleValue);
-    console.log(uListID, uCardID);
     var cardInfo = listOfListsInfo[listIndex].cards[cardIndex];
-    console.log(cardInfo.members);
     $.ajax({
       url: "http://localhost:3000/board/" + url + "/list/" + uListID + "/card/" + uCardID,
       data: {
@@ -883,7 +879,6 @@ $(document).ready(function () {
     if(e.which == 13) {
         e.preventDefault();
         var labelFormValue = $(this).find("input").val();
-        console.log(labelFormValue.length);
         if (labelFormValue.length > 0) {
           var cardID = $(this).parent().parent().parent().parent().parent().attr("id");
           var listIndex = map[cardID].listIndex;

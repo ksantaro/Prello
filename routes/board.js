@@ -4,14 +4,14 @@ var router = express.Router();
 var Board = require('../models/board.js');
 var User = require('../models/user.js');
 var io = require("../socketio");
-router.get("/", function(req, res) {
+router.get("/", requireLogin, function(req, res) {
   Board.find(function (err, board) {
     if (err) console.log(err);
     res.json(board);
   });
 });
 
-router.get("/:id",function(req,res) {
+router.get("/:id", requireLogin,function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     if (err) {
       console.log(err);
@@ -21,7 +21,7 @@ router.get("/:id",function(req,res) {
   });
 });
 
-router.post('/', function(req,res) {
+router.post('/', requireLogin, function(req,res) {
   var newBoard = new Board(
     { name: req.body.name,
       id: req.body.id,
@@ -44,7 +44,7 @@ router.post('/', function(req,res) {
 
 
 
-router.delete("/:id", function(req,res) {
+router.delete("/:id", requireLogin, function(req,res) {
   Board.findOneAndRemove({
     _id: req.params.id
   }, function(err, board) {
@@ -57,7 +57,7 @@ router.delete("/:id", function(req,res) {
   });
 });
 
-router.patch("/:id", function(req,res) {
+router.patch("/:id", requireLogin, function(req,res) {
   Board.findOneAndUpdate({
     _id: req.params.id
   },
@@ -71,7 +71,7 @@ router.patch("/:id", function(req,res) {
    }});
 });
 
-router.get("/:id/user/", function(req,res) {
+router.get("/:id/user/", requireLogin, function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     if (err) {
       console.log(err);
@@ -81,7 +81,7 @@ router.get("/:id/user/", function(req,res) {
   })
 });
 
-router.post("/:id/user/:email", function(req, res) {
+router.post("/:id/user/:email", requireLogin, function(req, res) {
   var userExsits = false;
   User.find(function(err,users) {
     console.log(users);
@@ -101,24 +101,16 @@ router.post("/:id/user/:email", function(req, res) {
     if (userExsits) {
       User.findOne({email: req.params.email}, function(err, user) {
         if(err) {
-          console.log(err);
           res.json("user does not exsist");
         } else {
           Board.findOne({_id: req.params.id}, function(err, board) {
-            console.log("EMAIL INFO");
-            console.log(user.email);
-            console.log(board.email);
             var containsUser = false;
             for (var num = 0; num < board.userList.length; num++) {
               if (board.userList[num].email === user.email) {
                 containsUser = true;
               }
             }
-            console.log("HEREREITEOWUTEWTUOEWUTOEWUTOEIW");
-            console.log(user._id + "");
-            console.log((board.userID));
             if ((user._id + "" !== board.userID) && !(containsUser)) {
-              console.log("YHESSS");
               var newUser =
                 {
                   name: user.username,
@@ -142,7 +134,7 @@ router.post("/:id/user/:email", function(req, res) {
 
 });
 
-router.delete("/:id/user/:id2", function(req, res) {
+router.delete("/:id/user/:id2", requireLogin, function(req, res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     var user = board.userList.id(req.params.id2);
     user.remove();
@@ -156,7 +148,7 @@ router.delete("/:id/user/:id2", function(req, res) {
   });
 });
 
-router.get("/:id/list/", function(req,res) {
+router.get("/:id/list/", requireLogin, function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     if (err) {
       console.log(err);
@@ -166,7 +158,7 @@ router.get("/:id/list/", function(req,res) {
   });
 });
 
-router.post("/:id/list/", function(req,res) {
+router.post("/:id/list/", requireLogin, function(req,res) {
   var newList =
     {
       title: req.body.title,
@@ -188,7 +180,7 @@ router.post("/:id/list/", function(req,res) {
     }
   });
 });
-router.patch("/:id/list/:id2", function(req,res) {
+router.patch("/:id/list/:id2", requireLogin, function(req,res) {
     console.log(req.body);
     /*Board.update(
       {'lists._id' : mongoose.Types.ObjectId(req.params.id2)},
@@ -211,7 +203,7 @@ router.patch("/:id/list/:id2", function(req,res) {
     });
 });
 
-router.delete("/:id/list/:id2", function(req,res) {
+router.delete("/:id/list/:id2", requireLogin, function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     var list = board.lists.id(req.params.id2);
     list.remove();
@@ -225,7 +217,7 @@ router.delete("/:id/list/:id2", function(req,res) {
   });
 });
 
-router.post("/:id/list/:id2/card", function(req,res) {
+router.post("/:id/list/:id2/card", requireLogin, function(req,res) {
   var newCard =
     {
       name: '',
@@ -244,7 +236,7 @@ router.post("/:id/list/:id2/card", function(req,res) {
   });
 });
 //BoardID ListID CardID
-router.patch("/:id/list/:id2/card/:id3", function(req,res) {
+router.patch("/:id/list/:id2/card/:id3", requireLogin, function(req,res) {
   console.log(req.body);
   console.log("UP HERE");
   Board.findOne({_id: req.params.id}, function(err, board) {
@@ -262,7 +254,7 @@ router.patch("/:id/list/:id2/card/:id3", function(req,res) {
   });
 });
 
-router.delete("/:id/list/:id2/card/:id3", function(req,res) {
+router.delete("/:id/list/:id2/card/:id3", requireLogin, function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     var card = board.lists.id(req.params.id2).cards.id(req.params.id3);
     card.remove();
@@ -276,7 +268,7 @@ router.delete("/:id/list/:id2/card/:id3", function(req,res) {
   });
 });
 
-router.post("/:id/list/:id2/card/:id3/label", function(req,res) {
+router.post("/:id/list/:id2/card/:id3/label", requireLogin, function(req,res) {
   var newLabels = {
     label : req.body.label,
   }
@@ -293,7 +285,7 @@ router.post("/:id/list/:id2/card/:id3/label", function(req,res) {
   });
 });
 
-router.delete("/:id/list/:id2/card/:id3/label/:id4", function(req,res) {
+router.delete("/:id/list/:id2/card/:id3/label/:id4", requireLogin, function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     var label = board.lists.id(req.params.id2).cards.id(req.params.id3).labels.id(req.params.id4);
     label.remove();
@@ -307,7 +299,7 @@ router.delete("/:id/list/:id2/card/:id3/label/:id4", function(req,res) {
   });
 });
 
-router.post("/:id/list/:id2/card/:id3/member", function(req,res) {
+router.post("/:id/list/:id2/card/:id3/member", requireLogin, function(req,res) {
   var newMember = {
     member : req.body.member,
   }
@@ -324,7 +316,7 @@ router.post("/:id/list/:id2/card/:id3/member", function(req,res) {
   });
 });
 
-router.delete("/:id/list/:id2/card/:id3/member/:id4", function(req,res) {
+router.delete("/:id/list/:id2/card/:id3/member/:id4", requireLogin, function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     var member = board.lists.id(req.params.id2).cards.id(req.params.id3).members.id(req.params.id4);
     member.remove();
@@ -338,7 +330,7 @@ router.delete("/:id/list/:id2/card/:id3/member/:id4", function(req,res) {
   });
 });
 
-router.post("/:id/list/:id2/card/:id3/comment", function(req,res) {
+router.post("/:id/list/:id2/card/:id3/comment", requireLogin, function(req,res) {
   var newComment = {
     comment : req.body.comment,
     user : req.body.user,
@@ -357,7 +349,7 @@ router.post("/:id/list/:id2/card/:id3/comment", function(req,res) {
   });
 });
 
-router.delete("/:id/list/:id2/card/:id3/comment/:id4", function(req,res) {
+router.delete("/:id/list/:id2/card/:id3/comment/:id4", requireLogin, function(req,res) {
   Board.findOne({_id: req.params.id}, function(err, board) {
     var comment = board.lists.id(req.params.id2).cards.id(req.params.id3).comments.id(req.params.id4);
     comment.remove();
@@ -370,5 +362,13 @@ router.delete("/:id/list/:id2/card/:id3/comment/:id4", function(req,res) {
     });
   });
 });
+
+function requireLogin (req, res, next) {
+  if (!req.session.user) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
+};
 
 module.exports = router;
