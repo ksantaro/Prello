@@ -8,11 +8,13 @@
   "dependencies": {
     "JSON2": "^0.1.0",
     "body-parser": "~1.17.1",
+    "client-sessions": "^0.8.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.3",
     "debug": "~2.6.3",
     "ejs": "~2.5.6",
     "express": "^4.15.3",
+    "mongoose": "^4.11.2",
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2",
     "socket.io": "^2.0.3"
