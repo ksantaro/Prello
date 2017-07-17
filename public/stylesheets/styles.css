@@ -8,6 +8,16 @@
   margin-right: 120px;
 }
 
+#email-no-small span {
+  font-size: 25px;
+}
+
+#email-no-small .add-new-board h2 {
+  float: left;
+  padding: 35px;
+  margin-right: 120px;
+}
+
 ::-webkit-scrollbar {
     width: 15px;
 }
