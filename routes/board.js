@@ -30,7 +30,7 @@ router.post('/', requireLogin, function(req,res) {
       lists: [],
     }
   );
-  console.log(newBoard);
+
   newBoard.save(function (err, list) {
     if (err) {
       console.log(err);
@@ -84,18 +84,12 @@ router.get("/:id/user/", requireLogin, function(req,res) {
 router.post("/:id/user/:email", requireLogin, function(req, res) {
   var userExsits = false;
   User.find(function(err,users) {
-    console.log(users);
-    console.log(req.params.email);
-    console.log(users.length);
     for (var num = 0; num < users.length; num++) {
-      console.log(users[num].email);
       if (users[num].email === req.params.email) {
-        console.log("its true");
         userExsits = true;
       }
     }
     if (!userExsits) {
-      console.log("user does not exsist");
       res.json("user does not exsist");
     }
     if (userExsits) {
@@ -172,9 +166,7 @@ router.post("/:id/list/", requireLogin, function(req,res) {
     if (err) {console.log(err);}
     else {
       //io.getInstance().emit();
-      console.log("11111111111111111111");
       io.getInstance().emit("newList", newList);
-      console.log("22222222222222222222");
       res.json(list);
       //boradcastIoemit new card, for everyone emit new list io.getInstance().emit
     }
@@ -237,8 +229,6 @@ router.post("/:id/list/:id2/card", requireLogin, function(req,res) {
 });
 //BoardID ListID CardID
 router.patch("/:id/list/:id2/card/:id3", requireLogin, function(req,res) {
-  console.log(req.body);
-  console.log("UP HERE");
   Board.findOne({_id: req.params.id}, function(err, board) {
     var card = board.lists.id(req.params.id2).cards.id(req.params.id3);
     card.name = req.body.name;

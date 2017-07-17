@@ -4,26 +4,21 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+
 var cors = require('cors');
 var sessions = require('client-sessions');
+
 var index = require('./routes/index');
 var users = require('./routes/users');
 var list = require("./routes/list");
-var board = require("./routes/board")
+var board = require("./routes/board");
+
 var User = require('./models/user.js');
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/prello'); // Port Num can be specified SOMETHING HERE
 var db = mongoose.connection;
-/*
-function(req, res, next) {
-  if(req.session.user) {
-    next;
-  } else {
-    res.redirect
-  }
-}
-*/
+
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log("mongo connected");
@@ -53,6 +48,22 @@ app.use(sessions({
 }));
 
 app.use("/list", list);
+
+app.get('/forgot-password', function(req, res) {
+    req.session.reset();
+    res.render('forgot-password', {email: ""});
+});
+
+app.get('/link-to-reset', function(req, res) {
+    req.session.reset();
+    res.render('link-to-reset');
+});
+
+app.get('/reset-password', function(req, res) {
+    req.session.reset();
+    res.render('reset-password');
+});
+
 app.get('/login', function(req, res) {
     req.session.reset();
     res.render('login');

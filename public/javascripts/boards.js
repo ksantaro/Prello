@@ -26,21 +26,12 @@ $.get("http://localhost:3000/uniqueID", function(response) {
   userID = response;
 });
 
-
-
 $.get("http://localhost:3000/board", function(response) {
-  console.log(response);
   for (var num = 0; num < response.length; num++) {
-    console.log(response[num].userID);
-    console.log(userID);
     if (response[num].userID === userID) {
       listOfBoards.push(response[num]);
-      console.log(response[num]);
-      console.log(response[num]._id);
     }
     for (var num2 = 0; num2 < response[num].userList.length; num2++) {
-      console.log(response[num].userList[num2].email);
-      console.log(userEmail);
       if (response[num].userList[num2].email === userEmail) {
         listOfSharedBoards.push(response[num]);
       }
@@ -63,7 +54,6 @@ $(document).ready(function () {
 
 
   boardBtn.click(function () {
-    console.log(dropdownContent.css("display") );
     if (dropdownContent.css("display") === "block") {
       dropdownContent.css("display", "none");
     } else {
@@ -107,7 +97,6 @@ $(document).ready(function () {
     var newBoard = {
       name : titleValue, id : listOfBoards.length + "", lists : [], userList : [], userID: userID
     };
-    console.log(newBoard);
     $(this).parent().parent().remove();
     $.ajax({
       type: "POST",
@@ -119,7 +108,6 @@ $(document).ready(function () {
         newBoard._id = response._id;
         listOfBoards.push(newBoard);
         var url = response._id;
-        console.log(url);
       },
       error: function(jqXHR,textStatus, errorThrown ) {
         console.log(errorThrown);

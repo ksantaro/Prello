@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="stylesheets/styles.css"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <title>Link To reset password</title>
+</head>
+
+<body id="login-page">
+  <nav id="main-navbar">
+    <div id="third-width">
+    </div>
+    <div id="third-width34">
+      <p>Prello</p>
+    </div>
+    <div id="third-width">
+    </div>
+  </nav>
+  <h2>Link To reset password</h2>
+  <form id="sign-up-form" action="/confirmEmail" method="POST">
+  <div class="form-center">
+    <p>To change your password, Click the link below</p>
+    <a id="reset-link" href="">Change Your password</a>
+  </div>
+  </form>
+</body>
+<script> var hashKey = '<%- hashKey %>'; </script>
+<script type="text/javascript" src="javascripts/link-to-reset.js"></script>
+
+
+</html>

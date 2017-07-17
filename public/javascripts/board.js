@@ -9,6 +9,12 @@ var originEmail;
 var boardUsers;
 var originUserID;
 var userID;
+socket.emit("url", url);
+/*
+socket.on('connection', function(socket){
+  socket.join(url);
+});
+*/
 
 function formatCurDate(date) {
   var hours = date.getHours();
@@ -47,7 +53,10 @@ $.get("http://localhost:3000/board/" + url, function (json) {
     ajaxLOLInfo = json.lists;
     boardID = json.id;
     originUserID = json.userID;
-    boardUsers = json.users;
+    boardUsers = json.userList;
+    $.get("http://localhost:3000/users/users/" + originUserID, function(response) {
+      originEmail = response.email;
+    });
     var listOfListsInfo = ajaxLOLInfo;
     $("h1#h1-white").html(boardName);
     $("title").html(boardName);
@@ -57,8 +66,6 @@ $.get("http://localhost:3000/board/" + url, function (json) {
           listOfBoards.push(response[num]);
         }
         for (var num2 = 0; num2 < response[num].userList.length; num2++) {
-          console.log(response[num].userList[num2].email);
-          console.log(userEmail);
           if (response[num].userList[num2].email === userEmail) {
             listOfSharedBoards.push(response[num]);
           }
@@ -72,7 +79,6 @@ $.get("http://localhost:3000/board/" + url, function (json) {
         menuAddButton.before($("<a/>").attr("id", num + "").attr("href","./" + listOfBoards[num]._id).html(listOfBoards[num].name));
       }
       for (var num = 0; num < listOfSharedBoards.length; num++) {
-        console.log(listOfSharedBoards[num]);
         $(".dropdown-content").append($("<a/>").attr("href","./" + listOfSharedBoards[num]._id).html(listOfSharedBoards[num].name))
       }
     });
@@ -105,7 +111,6 @@ $.get("http://localhost:3000/board/" + url, function (json) {
       listDiv.append("<div class=\"card add-card\"><button type=\"button\">Add a new card +</button></div>");
       board.append(listDiv);
     }
-    console.log("Debug",map, col, row);
   });
 /*
 $.ajax({
@@ -238,12 +243,6 @@ $(document).ready(function () {
   var modal = $(".modal");
   var fullview = $(".card-fullview");
   var boardTitle = $("h1#h1-white");
-  "JUST TARGET FULLVIEW, THEN $THIS.attr(id) WOULD KNOW WHICH CARD IT CAME FROM ---> IF YOU GIVE IT THE ID"
-  "TARGET FULLVIEW -> (BOARD FULLVIEW (TO DELEGATE))"
-  "FULLVIEW LISTENER NAME OF CARD "
-    "(CHANGEABLE contenteditable, IF IT CHANGES, DO IT TO THE CARD AND DATABASE IT BELONGS TO )"
-  "FULLVIEW LISTENER .edit"
-    "(set .description-text to contenteditable=true and edit text to save)"
   //Unique ID
   /*var col = 0;
   var row = 0;
@@ -316,12 +315,19 @@ $(document).ready(function () {
   });
   //Open Modal Add User Add Button
   userAddButton.click(function(e) {
-    var createModal = $("<div/>").addClass("modal-add-user").append($("<div/>").addClass("add-new-user")
+    var mainModal = $("<div/>").addClass("modal-add-user");
+    var createModal = $("<div/>").addClass("add-new-user")
       .append($("<h2/>").html("User Email"))
       .append($("<span/>").html("X"))
       .append($("<input/>").attr("type","text").attr("placeholder","e.g. jdoe@gmail.com"))
-      .append($("<button/>").attr("type","button").html("Add")));
-    body.append(createModal);
+      .append($("<button/>").attr("type","button").html("Add"))
+      .append($("<h3/>").html("All Users On Board"));
+    createModal.append($("<p/>").addClass("main-email").html(originEmail));
+    for (var num = 0; num < boardUsers.length; num++) {
+      createModal.append($("<p/>").addClass("user-email").html(boardUsers[num].email));
+    }
+    mainModal.append(createModal);
+    body.append(mainModal);
     dropdownContent.css("display", "none");
     optionsContent.css("display", "none");
     //option display none
@@ -353,6 +359,7 @@ $(document).ready(function () {
           alert(response);
         } else {
           listOfBoards[parseInt(boardID)].userList.push(response);
+          boardUsers.push(response);
         }
       },
       error: function(jqXHR,textStatus, errorThrown ) {
@@ -366,7 +373,6 @@ $(document).ready(function () {
     listOfLists = board.find(".list-cards");
     $.post("http://localhost:3000/board/" + url + "/list", function(response) {});
     $.get("http://localhost:3000/board/" + url, function(json) {
-      console.log(json);
       response = json.lists;
       var uListID = response[response.length - 1]._id
       var newObjectList = {
@@ -387,14 +393,13 @@ $(document).ready(function () {
         type: "PATCH",
         dataType: "json",
         success: function(response) {
-          console.log(response);
-          socket.emit("newList", response.lists[response.lists.length - 1]);
+          var data = {url: url, data: response.lists[response.lists.length - 1]}
+          socket.emit("newList", data);
         }
       });
     });
   });
   socket.on("new list", function(post) {
-    console.log(post, "everyone");
     listOfLists = board.find(".list-cards");
     listOfListsInfo.push(post);
     var newList ="<div class=\"list-cards\" id=\""+ col +"\"><div class=\"list-cards-title\"><h3 contenteditable=\"true\">Title</h3><span class=\"remove-list-cards\">x</span></div><div class=\"cards\"></div><div id=\"card-object\" class=\"card add-card\"><button type=\"button\">Add a new card +</button></div></div>";
@@ -417,13 +422,10 @@ $(document).ready(function () {
         listOfListsInfo[num].cards[num2].id = "" + num + num2;
       }
     }
-    console.log("listOfListsInfo",listOfListsInfo);
     col--;
-    socket.emit("deleteList", listID);
+    socket.emit("deleteList", {url: url, data: listID});
     $.get("http://localhost:3000/board/" + url + "/list", function (response) {
       var uDListID = response[listID]._id;
-      console.log(listID);
-      console.log(uDListID);
       $.ajax({
         url: "http://localhost:3000/board/" + url + "/list/" + uDListID,
         type: "DELETE",
@@ -438,7 +440,6 @@ $(document).ready(function () {
             listsInfo[num].id = num;
             curList = listsInfo[num];
             UListID = curList._id;
-            console.log(url, UListID);
             $.ajax({
               url: "http://localhost:3000/board/" + url + "/list/" + UListID,
               type: "PATCH",
@@ -449,20 +450,15 @@ $(document).ready(function () {
                 id : curList.id,
               },
               success : function(res) {
-                console.log(res);
               }
             });
-            console.log(listOfListsInfo[num].cards);
-            console.log(listOfListsInfo[num].cards.length);
             var cardListInfo;
-            for (var num2 = 0; num2 < listOfListsInfo[num].length; num2++) {
+            for (var num2 = 0; num2 < listOfListsInfo[num].cards.length; num2++) {
               cardListInfo = json.lists[num].cards;
-              listsInfo[num].cards[num2].id = num2;
+              listsInfo[num].cards[num2].id = ""+ num + num2;
               curCard = listsInfo[num].cards[num2];
               UCardID = curCard._id;
-              console.log(url, UListID, UCardID);
               var urlInfo = "http://localhost:3000/board/" + url + "/list/" + UListID + "/card/" + UCardID;
-              console.log(urlInfo);
               $.ajax({
                 url: urlInfo,
                 type: "PATCH",
@@ -474,7 +470,6 @@ $(document).ready(function () {
                   description: curCard.description,
                 },
                 success: function(res) {
-                  console.log(res);
                 }
               });
             }
@@ -482,14 +477,10 @@ $(document).ready(function () {
         }
       });
       var uListID;
-      console.log(listOfListsInfo);
     });
   });
   socket.on("delete list", function(listID) {
-    console.log(listID);
-    console.log("div#" + listID + ".list-cards");
     var listToDelete = $(".list-list .list-cards")[listID];
-    console.log(listToDelete);
     listToDelete.remove();
     var newBoard = $(".board");
     var newLists = $(".list-list .list-cards");
@@ -502,7 +493,6 @@ $(document).ready(function () {
         listOfListsInfo[num].cards[num2].id = "" + num + num2;
       }
     }
-    console.log("listOfListsInfo",listOfListsInfo);
     col--;
   });
   //create a card
@@ -511,16 +501,12 @@ $(document).ready(function () {
     var listIndex = $(this).parent().parent().attr("id");
     var cardIndex = listOfListsInfo[listIndex].cards.length;
     var uListID = listOfListsInfo[listIndex]._id;
-    console.log(uListID);
     $.post("http://localhost:3000/board/" + url + "/list/" + uListID + "/card", function (response) {
-      console.log(response);
     });
     $.get("http://localhost:3000/board/" + url + "/list/", function(response) {
-      console.log(response);
       var uCardID = response[listIndex].cards[cardIndex]._id;
       listOfListsInfo[listIndex].cards[cardIndex]._id = uCardID;
       var cardInfo = newCardInfo;
-      console.log(cardInfo);
 
       var cardToEmit = {
         _id : uCardID,
@@ -531,7 +517,7 @@ $(document).ready(function () {
         members : cardInfo.members,
         labels : cardInfo.lables,
       }
-      socket.emit("newCard", {newCardInfo: cardToEmit, listIndex, cardIndex, labels : cardInfo.labels});
+      socket.emit("newCard", {url: url, data: {newCardInfo: cardToEmit, listIndex, cardIndex, labels : cardInfo.labels}});
       $.ajax({
         url: "http://localhost:3000/board/" + url + "/list/" + uListID + "/card/" + uCardID,
         data: {
@@ -549,10 +535,8 @@ $(document).ready(function () {
         type: "PATCH",
         dataType: "json",
         success: function(response) {
-          console.log(response);
         }
       });
-      console.log(response);
       $.ajax({
         url: "http://localhost:3000/board/" + url + "/list/" + uListID + "/card/" + uCardID + "/label",
         data: {label : "example label"},
@@ -568,11 +552,9 @@ $(document).ready(function () {
     //create in page
     var newCard = $("<div/>").addClass("card").attr("id", newCardInfo.id);
     newCard.append("<p>"+ newCardInfo.name +"</p><p>edit/info</p>");
-    console.log($(this).parent().parent().find(".cards"));
     $(this).parent().parent().find(".cards").append(newCard);
   });
   socket.on("new card", function(post) {
-    console.log(post);
     var newCardInfo = post.newCardInfo;
     newCardInfo.labels = post.labels;
     var listIndex = post.listIndex;
@@ -582,7 +564,6 @@ $(document).ready(function () {
     //create in page
     var newCard = $("<div/>").addClass("card").attr("id", newCardInfo.id);
     newCard.append("<p>"+ newCardInfo.name +"</p><p>edit/info</p>");
-    console.log($(this).parent().parent().find(".cards"));
     var listToAddCard = $($($(".list-list .list-cards")[listIndex]).find(".cards"));
     listToAddCard.append(newCard);
     $(this).parent().parent().find(".cards").append(newCard);
@@ -591,10 +572,8 @@ $(document).ready(function () {
   body.on("click", ".modal button.delete", function() {
     var cardToDelete = $(this).parent().parent().parent();
     var cardID = cardToDelete.attr("id");
-    console.log(cardID);
-    socket.emit("deleteCard", cardID);
+    socket.emit("deleteCard", {url: url, data: cardID});
     cardToDelete.remove();
-    console.log($(".board #" + cardID));
     $(".board #" + cardID).remove();
     var newBoard = $(".board");
     var newLists = $(".list-list .list-cards");
@@ -618,7 +597,6 @@ $(document).ready(function () {
           //console.log($(newLists[num]));
             $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
             listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
-            console.log(listOfListsInfo[listIndex].cards[num].id);
             uCardID = listOfListsInfo[listIndex].cards[num]._id;
             $.ajax({
               url: "http://localhost:3000/board/" + url + "/list/" + uListID + "/card/" + uCardID,
@@ -641,7 +619,6 @@ $(document).ready(function () {
       //console.log($(newLists[num]));
         $($(newLists[listIndex]).find(".cards .card")[num]).attr("id", "" + listIndex + num);
         listOfListsInfo[listIndex].cards[num].id = "" + listIndex + num;
-        console.log(listOfListsInfo[listIndex].cards[num].id);
     }
   });
   //list cards title set in data Structure
@@ -656,18 +633,16 @@ $(document).ready(function () {
       type: "PATCH",
       dataType: "json"
     });
-    socket.emit("changeListTitle", {title: newTitleValue, parentId :parentId});
+    socket.emit("changeListTitle", {url: url, data: {title: newTitleValue, parentId :parentId}});
   });
   socket.on("change list title", function(titleInfo) {
     var parentId = titleInfo.parentId;
     var newTitleValue = titleInfo.title;
     listOfListsInfo[parentId].title = newTitleValue;
-    console.log($($(".list-list .list-cards")[parentId]).find("h3").html(newTitleValue));
     //$($(".list-list")[parentId]).html(newTitleValue);
   });
   //Show Board dropdown
   boardBtn.click(function () {
-    console.log(dropdownContent.css("display") );
     if (dropdownContent.css("display") === "block") {
       dropdownContent.css("display", "none");
     } else {
@@ -691,13 +666,11 @@ $(document).ready(function () {
   });
   //Close Modal Button
   body.on("click", ".modal .close-modal",function() {
-    console.log($(this).parent().parent().parent());
     $(this).parent().parent().parent().remove();
     $("body").css("overflow", "auto");
   });
   //Open Fullview
   board.on("click", ".list-cards .cards .card", function () {
-    console.log($(this).attr("id"));
     var cardID = $(this).attr("id");
     var cardIndex = map[cardID].cardIndex;
     var listIndex = map[cardID].listIndex;
@@ -798,7 +771,6 @@ $(document).ready(function () {
       type: "PATCH",
       dataType: "json",
       success: function() {
-        console.log("success");
       },
     });
   });
@@ -934,7 +906,6 @@ $(document).ready(function () {
     if (descriptionText.attr("contenteditable") === "true") {
       var newDescription = descriptionText.html();
       var cardID = $(this).parent().parent().parent().attr("id");
-      console.log(cardID);
       var listIndex = map[cardID].listIndex;
       var cardIndex = map[cardID].cardIndex;
       var uListID = listOfListsInfo[listIndex]._id;
@@ -962,14 +933,12 @@ $(document).ready(function () {
     var curUser = username;
     var timeString = formatCurDate(curDate);
     var commentText = $(this).parent().find("textarea").val();
-    console.log(commentText);
     if (commentText.length > 0) {
       var cardID = $(this).parent().parent().parent().parent().attr("id");
       var listIndex = map[cardID].listIndex;
       var cardIndex = map[cardID].cardIndex;
       var uListID = listOfListsInfo[listIndex]._id;
       var uCardID = listOfListsInfo[listIndex].cards[cardIndex]._id;
-      console.log(cardID);
       var commentLine = $("<div/>").addClass("comment-line").attr("id", "" + (1 + listOfListsInfo[listIndex].cards[cardIndex].members.length));
       var member = $("<p/>").addClass("member").html(curUser);
       var comment = $("<p/>").addClass("comment-text").html(commentText);

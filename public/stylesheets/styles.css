@@ -1,3 +1,13 @@
+#email-no span {
+  font-size: 30px;
+}
+
+#email-no .add-new-board h2 {
+  float: left;
+  padding: 35px;
+  margin-right: 120px;
+}
+
 ::-webkit-scrollbar {
     width: 15px;
 }
@@ -163,12 +173,37 @@ overflow: auto;
   margin-top: 0;
 }
 
+.add-new-user h3 {
+  margin: 0;
+  padding-bottom: 15px;
+}
+
+.add-new-user .main-email {
+
+}
+
+.add-new-user .user-email {
+
+}
+
+.add-new-user .user-email, .add-new-user .main-email {
+  margin: 0;
+    margin-bottom: 10px;
+    padding: 12px 0px;
+    background-color: #d2d2d2;
+    padding-left: 10px;
+    margin-right: 20px;
+}
+
 .add-new-board, .add-new-user {
   max-width: 450px;
   margin-left: auto;
   margin-right: auto;
   background-color: white;
   padding-left: 12px;
+  white-space: nowrap;
+    overflow: auto;
+    max-height: 540px;
 }
 
 .add-new-board h2, .add-new-user h2 {
